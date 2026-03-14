@@ -1,13 +1,18 @@
-import {useState, useContext, useMemo, useCallback} from 'react';
-import PropTypes from 'prop-types';
+import {useState, useContext, useMemo, useCallback, useEffect} from 'react';
 import {AuthContext} from './AuthContext';
-import * as authApi from '../api/authApi'; // Твоите JS функции
+import * as authApi from '../api/authApi';
 
 export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(() => {
         const savedUser = localStorage.getItem('user');
         return savedUser ? JSON.parse(savedUser) : null;
     });
+
+    // Функция за пълно изчистване на сесията (използва се при logout и изтекла сесия)
+    const clearAuth = useCallback(() => {
+        setUser(null);
+        localStorage.removeItem('user');
+    }, []);
 
     const login = useCallback(async (credentials) => {
         const response = await authApi.loginApi(credentials);
@@ -18,29 +23,46 @@ export const AuthProvider = ({children}) => {
             const authData = {
                 username: credentials.username,
                 permissions: serverJson?.data?.permissions || [],
+                is_superuser: serverJson?.data.is_superuser || 0,
                 expiresAt: Date.now() + (serverJson?.data?.expires_in ?? 0) * 1000
             };
 
             setUser(authData);
             localStorage.setItem('user', JSON.stringify(authData));
-            return { success: true };
+            return {success: true};
         }
 
         return {
             success: false,
-            error: response?.data?.message || response?.error || 'Невалидни данни за вход'
+            error: response?.data?.message || response?.data?.data?.error || 'Невалидни данни за вход'
         };
     }, []);
+
     const logout = useCallback(async () => {
         try {
             await authApi.logout();
         } finally {
-            setUser(null);
-            localStorage.removeItem('user');
+            clearAuth();
         }
-    }, []);
+    }, [clearAuth]);
+
+    useEffect(() => {
+        const handleAuthExpired = () => {
+            console.warn("Session expired. Clearing user state.");
+            clearAuth();
+        };
+
+        window.addEventListener('auth-expired', handleAuthExpired);
+
+        return () => {
+            window.removeEventListener('auth-expired', handleAuthExpired);
+        };
+    }, [clearAuth]);
 
     const hasPermission = useCallback((resource, action) => {
+        if (user?.is_superuser === 1 || user?.is_superuser === true) {
+            return true;
+        }
         return user?.permissions?.some(
             p => p.resource === resource && p.action === action
         ) ?? false;
@@ -59,10 +81,6 @@ export const AuthProvider = ({children}) => {
             {children}
         </AuthContext.Provider>
     );
-};
-
-AuthProvider.propTypes = {
-    children: PropTypes.node.isRequired,
 };
 
 // eslint-disable-next-line react-refresh/only-export-components

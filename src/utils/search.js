@@ -12,11 +12,6 @@ export const filterBySearch = (data, search) => {
     );
 };
 
-/**
- * @param {Array} data
- * @param {String} value
- * @param {String} key
- */
 export const filterBySelect = (data, value, key) => {
     if (!value) return data;
 

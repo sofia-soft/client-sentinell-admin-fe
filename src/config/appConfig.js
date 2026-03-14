@@ -7,16 +7,32 @@ import {
 
 export const MENU_ITEMS = [
     {
-        label: "Users", icon: IconUsersGroup, url: "/users"
+        label: "Users",
+        icon: IconUsersGroup,
+        url: "/users",
+        resource: 'users',
+        action: 'view'
     },
     {
-        label: "Roles", icon: IconUserScan, url: "/roles"
+        label: "Roles",
+        icon: IconUserScan,
+        url: "/roles",
+        resource: 'roles',
+        action: 'view'
     },
     {
-        label: "Permissions", icon: IconKey, url: "/permissions"
+        label: "Permissions",
+        icon: IconKey,
+        url: "/permissions",
+        resource: 'permissions',
+        action: 'view'
     },
     {
-        label: "Settings", icon: IconAdjustmentsCog, url: "/settings"
+        label: "Settings",
+        icon: IconAdjustmentsCog,
+        url: "/settings",
+        resource: 'settings',
+        action: 'view'
     }
 
 ]

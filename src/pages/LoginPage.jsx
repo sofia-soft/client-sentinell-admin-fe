@@ -14,12 +14,12 @@ import Login from "../assets/login.svg"
 import {useForm} from '@mantine/form';
 import {useState} from 'react';
 import {useAuth} from '../contexts/AuthProvider';
+import {notifications} from '@mantine/notifications';
 
 
 export function LoginPage() {
     const {login} = useAuth();
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
 
     const form = useForm({
         mode: 'controlled',
@@ -32,7 +32,6 @@ export function LoginPage() {
 
     const handleSubmit = async (values) => {
         setLoading(true);
-        setError(null);
 
         try {
             const result = await login({
@@ -41,19 +40,31 @@ export function LoginPage() {
             });
 
             if (!result.success) {
-                setError(result.error || "Невалидно потребителско име или парола");
+
+                notifications.show({
+                    title: `Login message`,
+                    message: result.error || "Невалидно потребителско име или парола",
+                    position: 'top-right',
+                    color: "red"
+                })
             }
 
         } catch (err) {
             console.log(`Exception while doing something: ${err}`);
-            setError("Възникна грешка при връзката със сървъра.");
+            notifications.show({
+                title: `Login message`,
+                message: "Възникна грешка при връзката със сървъра.",
+                position: 'top-right',
+                color: "red"
+
+            })
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <Center mih="100vh"> {/* По-добре за центриране */}
+        <Center mih="100vh">
             <Card shadow="md" p={0} radius="lg" withBorder w={{base: '95%', sm: '80%', lg: '60%'}}>
                 <Flex direction={{base: 'column', sm: 'row'}}>
 

@@ -7,12 +7,17 @@ export function Roles() {
         <>
             <h1>Roles</h1>
 
-            <PageContentTemplate tableData={
-                {
-                    header: ROLES_HEADER,
-                    rows: ROLES_DATA
+            <PageContentTemplate
+                tableData={
+                    {
+                        header: ROLES_HEADER,
+                        rows: ROLES_DATA,
+                    }
                 }
-            } buttonsVisible={BUTTON_VISIBILITY}/>
+                buttonsVisible={BUTTON_VISIBILITY}
+                resourceName="roles"
+
+            />
         </>
     )
 

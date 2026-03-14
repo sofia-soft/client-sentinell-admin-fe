@@ -14,16 +14,16 @@ import {Outlet, useNavigate} from 'react-router-dom';
 import Logo from "../assets/logo.webp"
 import {MENU_ITEMS} from "../config/appConfig.js"
 import {
-    IconBrightnessDown ,
+    IconBrightnessDown,
     IconMoonFilled,
     IconChartHistogram,
     IconDevices2,
     IconLogout
 } from '@tabler/icons-react';
-import { useAuth } from '../contexts/AuthProvider'; // 1. Импортирай useAuth
+import {useAuth} from '../contexts/AuthProvider'; // 1. Импортирай useAuth
 
 export function AdminLayout() {
-    const { logout } = useAuth();
+    const {logout, hasPermission} = useAuth();
     const [opened, {toggle}] = useDisclosure();
     const navigate = useNavigate();
     const {colorScheme, setColorScheme} = useMantineColorScheme();
@@ -32,6 +32,12 @@ export function AdminLayout() {
         await logout();
     };
 
+
+    const filteredMenu = MENU_ITEMS.filter(item => {
+        if (!item.resource) return true;
+
+        return hasPermission(item.resource, item.action);
+    });
 
     return (
         <AppShell
@@ -61,7 +67,7 @@ export function AdminLayout() {
                                 colorScheme === 'light' ? setColorScheme('dark')
                                     : setColorScheme("light")}>
                             {
-                                colorScheme === 'light' ? <IconMoonFilled /> : <IconBrightnessDown stroke={2} />
+                                colorScheme === 'light' ? <IconMoonFilled/> : <IconBrightnessDown stroke={2}/>
                             }
                         </ActionIcon>
                         <Avatar variant="outline" radius="xl" src=""/>
@@ -72,13 +78,13 @@ export function AdminLayout() {
             <AppShell.Navbar p="md">
                 <NavLink
                     label="Dashboard"
-                    leftSection={<IconChartHistogram stroke={2} />}
+                    leftSection={<IconChartHistogram stroke={2}/>}
                     onClick={() => navigate('/')}/>
                 <NavLink
                     label="System"
-                    leftSection={<IconDevices2 stroke={2} />}
+                    leftSection={<IconDevices2 stroke={2}/>}
                 >
-                    {MENU_ITEMS.map(item => (
+                    {filteredMenu.map(item => (
                         <NavLink
                             key={item.label}
                             label={item.label}
@@ -92,14 +98,16 @@ export function AdminLayout() {
                     label="Logout"
                     color="red"
                     variant="filled"
-                    leftSection={<IconLogout stroke={2} /> }
+                    leftSection={<IconLogout stroke={2}/>}
                     onClick={handleLogout}
                     mt="auto"
                 />
                 <Text c="dimmed" ta="center">v1.0.0</Text>
             </AppShell.Navbar>
 
-            <AppShell.Main>
+            <AppShell.Main
+                style={{minHeight: 'unset'}}
+            >
                 <Outlet/>
             </AppShell.Main>
         </AppShell>

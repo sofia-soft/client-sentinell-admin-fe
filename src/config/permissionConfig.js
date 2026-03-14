@@ -26,9 +26,17 @@ export const BUTTON_VISIBILITY = {
         values: ['yes', 'no'],
         icon: IconUserCheck
     },
-    export: {visible: true},
-    import: {visible: true},
-    create: {visible: true}
+    export: {
+        visible: true,
+        permission: { resource: 'reports', action: 'export' }
+    },
+    import: {
+        visible: true,
+        permission: { resource: 'data', action: 'import' }},
+    create: {
+        visible: true,
+        permission: { resource: 'permissions', action: 'create' }
+    }
 
 }
 

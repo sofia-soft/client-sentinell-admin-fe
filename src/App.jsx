@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Notifications } from '@mantine/notifications';
 import { MantineProvider } from '@mantine/core';
 import { AdminLayout } from './layouts/AdminLayout';
 import { AuthGuard } from './components/AuthGuard';
@@ -13,6 +14,7 @@ import { AuthProvider, useAuth } from './contexts/AuthProvider.jsx';
 function App() {
     return (
         <MantineProvider theme={myTheme}>
+            <Notifications />
             <AuthProvider>
                 <AppRouter />
             </AuthProvider>

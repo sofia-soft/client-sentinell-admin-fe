@@ -1,4 +1,4 @@
-import { IconUser, IconUserCheck } from '@tabler/icons-react';
+import {IconUser, IconUserCheck} from '@tabler/icons-react';
 
 export const ROLES_HEADER = [
     {key: "id", value: "ID"},
@@ -26,9 +26,21 @@ export const BUTTON_VISIBILITY = {
         values: ['active', 'inactive'],
         icon: IconUserCheck
     },
-    export: {visible: true},
-    import: {visible: true},
-    create: {visible: true}
+    export: {
+        visible: true,
+        permission: {resource: 'reports', action: 'export'}
+
+    },
+    import: {
+        visible: true,
+        permission: {resource: 'data', action: 'import'}
+
+    },
+    create: {
+        visible: true,
+        permission: {resource: 'roles', action: 'create'}
+
+    }
 
 }
 

@@ -22,30 +22,32 @@ const request = async (method, url, data) => {
 
         let response = await fetch(url, options);
 
-        if (response.status === 401 && !url.includes('/auth/login') && !url.includes('/auth/refresh')) {
-            const refreshRes = await fetch('/api/auth/refresh', {
+        console.log(response)
+        if (response.status === 401 && !url.includes('/login') && !url.includes('/refresh')) {
+            const refreshRes = await fetch('/api/v1/auth/refresh/', {
                 method: 'POST',
                 credentials: 'include',
-                headers: { 'X-CSRF-Token': getCookie('csrf_token') || '' }
+                headers: {'X-CSRF-Token': getCookie('csrf_token') || ''}
             });
 
             if (refreshRes.ok) {
-                options.headers['X-CSRF-Token'] = getCookie('csrf_token');
+                options.headers['X-CSRF-Token'] = getCookie('csrf_token') || '';
                 response = await fetch(url, options);
             } else {
-                window.location.href = '/login';
-                return { error: "Session expired" };
+                localStorage.removeItem('user');
+                window.dispatchEvent(new Event('auth-expired'));
+                return { data: { data: [] }, error: "Session expired", status: 401 };
             }
         }
 
-        const result = await response.json();
-        return { data: result, status: response.status };
+        const isJson = response.headers.get('content-type')?.includes('application/json');
+        const result = isJson ? await response.json() : null;
+
+        return {data: result, status: response.status};
 
     } catch (err) {
-        if (err instanceof TypeError) {
-            return { error: "Service unavailable. Please try again." };
-        }
-        return { error: "An unexpected error occurred." };
+        console.log(err)
+        return {error: "Service unavailable", status: 503};
     }
 };
 
