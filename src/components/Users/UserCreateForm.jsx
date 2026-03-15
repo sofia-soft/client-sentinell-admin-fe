@@ -15,6 +15,7 @@ export function UserCreateForm({onSubmit, apiLoading, updateUserTable}) {
     const [loading, setLoading] = useState(false);
     const [opened, setOpened] = useState(false);
     const [isActive, setIsActive] = useState(true);
+
     const fetchRoles = async () => {
         if (roles.length > 0) {
             setOpened(true);
@@ -29,7 +30,7 @@ export function UserCreateForm({onSubmit, apiLoading, updateUserTable}) {
                     value: item.uuid,
                     label: item.name,
                 }));
-                // updateUserTable(prev => [newUser, ...prev]);
+                updateUserTable(prev => [newUser, ...prev]);
                 setRoles(mappedRoles);
                 setOpened(true);
             }

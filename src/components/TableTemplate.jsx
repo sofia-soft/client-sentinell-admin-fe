@@ -1,4 +1,4 @@
-import {Table, Badge, Flex, ActionIcon, Box , Image, Text} from '@mantine/core';
+import {Table, Badge, Flex, ActionIcon, Box, Image, Text} from '@mantine/core';
 import {useAuth} from "../contexts/AuthProvider.jsx";
 import {IconPencil, IconTrash} from '@tabler/icons-react';
 import Nodata from "../assets/no_data.svg"
@@ -78,62 +78,48 @@ export function TableTemplate(
 
                             ))}
                             {actionShow &&
-                                <Table.Td key={'actions-col'}>
-                                    <Flex
-                                        gap="xs"
-                                        justify="start"
-                                        align="center"
-                                        direction="row"
-                                        wrap="wrap"
-                                    >
-                                        {
-                                            hasPermission(resourceName, 'update') &&
-                                            <ActionIcon
-                                                variant="transparent"
-                                                color="orange"
-                                                aria-label="Update"
-                                                onClick={() => onEdit?.(item)}
-                                            >
-                                                <IconPencil stroke={2} color={'orange'}/>
-                                            </ActionIcon>
-                                        }
+                                <Table.Td key={'actions-col'} class='actions'>
 
-                                        {
-                                            hasPermission(resourceName, 'delete') &&
-                                            <ActionIcon
-                                                variant="transparent"
-                                                color="red"
-                                                aria-label="Delete"
-                                                onClick={() => onDelete(item.uuid)}
-                                            >
-                                                <IconTrash stroke={2}/>
-                                            </ActionIcon>
-                                        }
-                                    </Flex>
+                                    {
+                                        hasPermission(resourceName, 'update') &&
+                                        <ActionIcon
+                                            variant="transparent"
+                                            color="orange"
+                                            aria-label="Update"
+                                            onClick={() => onEdit?.(item)}
+                                        >
+                                            <IconPencil stroke={2} color={'orange'}/>
+                                        </ActionIcon>
+                                    }
+
+                                    {
+                                        hasPermission(resourceName, 'delete') &&
+                                        <ActionIcon
+                                            variant="transparent"
+                                            disabled={item.is_system}
+                                            color="red"
+                                            aria-label="Delete"
+                                            onClick={() => onDelete(item.uuid)}
+                                        >
+                                            <IconTrash stroke={2}/>
+                                        </ActionIcon>
+                                    }
                                 </Table.Td>
                             }
                         </Table.Tr>
                     ))}
 
                     {isEmpty && (
-                        <div style={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            zIndex: 1,
-                            textAlign: 'center',
-                            pointerEvents: 'none'
-                        }}>
+                        <div class='no-data-section'>
                             <Image src={Nodata}
                                    w={250}/>
                             <Text c="dimmed" mt="sm">Няма намерени данни</Text>
                         </div>
                     )}
 
-                    {Array.from({ length: emptyRowsCount }).map((_, index) => (
-                        <Table.Tr key={`empty-${index}`} style={{ height: `${rowHeight}px` }}>
-                            {Array.from({ length: totalColumns }).map((_, cellIdx) => (
+                    {Array.from({length: emptyRowsCount}).map((_, index) => (
+                        <Table.Tr key={`empty-${index}`} style={{height: `${rowHeight}px`}}>
+                            {Array.from({length: totalColumns}).map((_, cellIdx) => (
                                 <Table.Td key={`cell-${cellIdx}`}>&nbsp;</Table.Td>
                             ))}
                         </Table.Tr>

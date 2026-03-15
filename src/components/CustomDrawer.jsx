@@ -3,7 +3,7 @@ import {Drawer} from "@mantine/core";
 export function CustomDrawer(
     {
         title,
-        contant,
+        content,
         opened,
         close
     }
@@ -11,7 +11,7 @@ export function CustomDrawer(
 
     return (
         <Drawer opened={opened} onClose={close} title={title} position={"right"}>
-            {contant}
+            {content}
         </Drawer>
     )
 }

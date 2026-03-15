@@ -1,0 +1,27 @@
+.actions {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    padding: unset;
+    justify-content: center;
+}
+
+.no-data-section {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    text-align: center;
+    pointer-events: none;
+}
+
+.mantine-Table-table > thead > tr > th {
+    text-align: center;
+    padding: 14px 5px;
+}
+
+.mantine-Table-table > tbody > tr > td {
+    text-align: center;
+    padding: 12px 0;
+}

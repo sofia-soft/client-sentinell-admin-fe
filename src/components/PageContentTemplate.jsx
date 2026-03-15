@@ -53,7 +53,7 @@ export function PageContentTemplate(
 
     return (
         <Container
-            m={"2% 5%"}
+            m={"2% 3%"}
             fluid
         >
             <Flex

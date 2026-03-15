@@ -107,6 +107,8 @@ export function AdminLayout() {
 
             <AppShell.Main
                 style={{minHeight: 'unset'}}
+                pb={0}
+                pt={50}
             >
                 <Outlet/>
             </AppShell.Main>
