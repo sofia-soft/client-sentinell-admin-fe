@@ -20,15 +20,13 @@ export function Permissions() {
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoader(true);
-        setTimeout(() => {
 
-            permissionsApi.listPermissions().then(response => {
-                if (response.status === 401) return;
+        permissionsApi.listPermissions().then(response => {
+            if (response.status === 401) return;
 
-                if (response.status === 200) setPermissions(response.data.data)
-            }).catch(console.error)
-                .finally(() => setLoader(false));
-        }, 2000)
+            if (response.status === 200) setPermissions(response.data.data)
+        }).catch(console.error)
+            .finally(() => setLoader(false));
     }, []);
 
 
@@ -89,32 +87,32 @@ export function Permissions() {
             <Center style={{position: "fixed", zIndex: 10, top: '50%', left: '50%'}}>
                 <Loader color="blue" size="xl" type="dots"/>
             </Center> :
-        <>
-            <Title order={2}>Permissions</Title>
+            <>
+                <Title order={2}>Permissions</Title>
 
-            <CustomDrawer
-                close={close}
-                opened={opened}
-                title={titleDrawer}
-                content={contentDrawer}
-            />
+                <CustomDrawer
+                    close={close}
+                    opened={opened}
+                    title={titleDrawer}
+                    content={contentDrawer}
+                />
 
-            <PageContentTemplate
-                tableData={
-                    {
-                        header: PERMISSIONS_HEADER,
-                        rows: permissions,
+                <PageContentTemplate
+                    tableData={
+                        {
+                            header: PERMISSIONS_HEADER,
+                            rows: permissions,
 
+                        }
                     }
-                }
-                buttonsVisible={BUTTON_VISIBILITY}
-                resourceName="permissions"
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onCreate={handleCreate}
+                    buttonsVisible={BUTTON_VISIBILITY}
+                    resourceName="permissions"
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onCreate={handleCreate}
 
-            />
-        </>
+                />
+            </>
 
     )
 }

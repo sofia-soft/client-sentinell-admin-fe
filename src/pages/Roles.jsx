@@ -14,7 +14,10 @@ export function Roles() {
     const [roles, setRoles] = useState(null);
     const [opened, {open, close}] = useDisclosure(false);
     const [titleDrawer, setTitleDrawer] = useState('');
-    const [contentDrawer, setContentDrawer] = useState(<></>);
+
+    const [drawerType, setDrawerType] = useState(null);
+    const [selectedRole, setSelectedRole] = useState(null);
+
     const [loader, setLoader] = useState(false);
     const [loading, setLoading] = useState(false);
     const [permissions, setPermissions] = useState([]);
@@ -53,45 +56,29 @@ export function Roles() {
         return Object.values(grouped);
     };
 
-    // const getPermissions{
-    //     setLoading(true);
-    //
-    //     permissionsApi.listPermissions().then(
-    //         response => {
-    //             if (response.status === 401) return;
-    //
-    //             if (response.status === 200) {
-    //                 setPermissions(transformPermissions(response.data.data));
-    //             }
-    //         }
-    //     ).catch(console.error)
-    //     .finally(() => setLoading(false));
-    //
-    // }
+    const permissionsHandler = async () => {
+        try {
+            const response = await permissionsApi.listPermissions();
+            if (response.status === 200) {
+                return transformPermissions(response.data.data);
+
+            }
+        } catch (error) {
+            console.error(error);
+        }
+        return [];
+    };
 
     const handleEdit = (item) => {
+        setDrawerType('update');
+        setSelectedRole(item);
         setTitleDrawer('Update role');
-        getPermissions();
-        setContentDrawer(
-            <RoleUpdateForm
-                roleData={item}
-                // onSubmit={handleSubmitForm}
-                apiLoading={loading}
-                permissions={permissions}
-            />
-        );
         open();
     };
 
     const handleCreate = () => {
-        setTitleDrawer('Create rol');
-        setContentDrawer(
-            <RoleCreateForm
-                // onSubmit={handleSubmitForm}
-                apiLoading={loading}
-                permissions={permissions}
-            />
-        );
+        setDrawerType('create');
+        setTitleDrawer('Create role');
         open();
     };
 
@@ -135,7 +122,18 @@ export function Roles() {
                     close={close}
                     opened={opened}
                     title={titleDrawer}
-                    content={contentDrawer}
+                    content={
+                        drawerType === 'update' ? (
+                            <RoleUpdateForm
+                                roleData={selectedRole}
+                                permissionsHandler={permissionsHandler}
+                            />
+                        ) : (
+                            <RoleCreateForm
+                                permissionsHandler={permissionsHandler}
+                            />
+                        )
+                    }
                 />
 
                 <PageContentTemplate

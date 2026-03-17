@@ -21,15 +21,13 @@ export function Users() {
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoader(true);
-        setTimeout(() => {
 
-            usersApi.listUsers().then(response => {
-                if (response.status === 401) return;
+        usersApi.listUsers().then(response => {
+            if (response.status === 401) return;
 
-                if (response.status === 200) setUsers(response.data.data)
-            }).catch(console.error)
-                .finally(() => setLoader(false));
-        }, 2000)
+            if (response.status === 200) setUsers(response.data.data)
+        }).catch(console.error)
+            .finally(() => setLoader(false));
     }, []);
 
 

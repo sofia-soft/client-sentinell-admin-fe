@@ -56,7 +56,6 @@ export function PermissionCreateForm() {
                         <Switch
                             label="System Permission"
                             description="System permissions cannot be deleted"
-                            disabled
                         />
 
                         <Paper withBorder p="sm">

@@ -11,12 +11,12 @@ import {
     Paper,
     Select,
     Grid,
-    Checkbox
+    Checkbox, Center, Loader
 } from "@mantine/core";
+import {useState} from "react";
 
-export function RoleCreateForm({permissions}) {
-
-    console.log(permissions)
+export function RoleCreateForm() {
+    const [roleName, setRoleName] = useState('');
 
     return (
         <>
@@ -34,6 +34,8 @@ export function RoleCreateForm({permissions}) {
                             label="Role Name"
                             placeholder="Administrator"
                             required
+                            value={roleName}
+                            onChange={(event) => setRoleName(event.currentTarget.value)}
                         />
 
                         <Textarea
@@ -45,8 +47,8 @@ export function RoleCreateForm({permissions}) {
                             label="Status"
                             defaultValue="active"
                             data={[
-                                { value: "active", label: "Active" },
-                                { value: "inactive", label: "Inactive" },
+                                {value: "active", label: "Active"},
+                                {value: "inactive", label: "Inactive"},
                             ]}
                         />
 
@@ -61,32 +63,45 @@ export function RoleCreateForm({permissions}) {
                 <Tabs.Panel value="permissions" pt="md">
 
                     <Stack>
+                        <Paper key={roleName || "empty-name"} withBorder p="md" shadow="xs">
+                            <Text fw={600} mb="sm" style={{textTransform: 'capitalize'}}>
+                                {roleName ||  <Text c="dimmed">Enter role name</Text>}
+                            </Text>
 
-                        {permissions.map((module) => (
-                            <Paper key={module.name} withBorder p="md">
-
-                                <Text fw={600} mb="sm">
-                                    {module.name}
-                                </Text>
-
-                                <Grid>
-                                    {module.actions.map((action) => (
-                                        <Grid.Col span={3} key={action}>
-                                            <Checkbox label={action} />
-                                        </Grid.Col>
-                                    ))}
-                                </Grid>
-
-                            </Paper>
-                        ))}
-
+                            <Grid justify="center" align="center">
+                                <Grid.Col span={3} key={'permissions-create'}>
+                                    <Checkbox
+                                        label={"create"}
+                                        // description={action.description}
+                                    />
+                                </Grid.Col>
+                                <Grid.Col span={3} key={'permissions-update'}>
+                                    <Checkbox
+                                        label={"update"}
+                                        // description={action.description}
+                                    />
+                                </Grid.Col>
+                                <Grid.Col span={3} key={'permissions-view'}>
+                                    <Checkbox
+                                        label={"view"}
+                                        // description={action.description}
+                                    />
+                                </Grid.Col>
+                                <Grid.Col span={3} key={'permissions-delete'}>
+                                    <Checkbox
+                                        label={"delete"}
+                                        // description={action.description}
+                                    />
+                                </Grid.Col>
+                            </Grid>
+                        </Paper>
                     </Stack>
 
                 </Tabs.Panel>
 
             </Tabs>
 
-            <Divider my="md" />
+            <Divider my="md"/>
 
             <Group justify="flex-end">
                 <Button fullWidth>

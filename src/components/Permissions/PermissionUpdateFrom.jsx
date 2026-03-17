@@ -14,6 +14,11 @@ import {
 
 export function PermissionUpdateFrom({permissionData,onSubmit,apiLoading})
 {
+
+    const fetchResources = () => {
+
+    }
+
     return (
         <>
             <Tabs defaultValue="general">
@@ -50,7 +55,7 @@ export function PermissionUpdateFrom({permissionData,onSubmit,apiLoading})
                             label="System Permission"
                             description="System permissions cannot be deleted"
                             checked={permissionData?.is_system}
-                            disabled
+                            disabled={permissionData?.is_system}
                         />
 
                         <Group>
