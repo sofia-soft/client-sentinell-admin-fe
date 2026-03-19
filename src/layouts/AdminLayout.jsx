@@ -12,13 +12,14 @@ import {
 import {useDisclosure} from '@mantine/hooks';
 import {Outlet, useNavigate} from 'react-router-dom';
 import Logo from "../assets/logo.webp"
-import {MENU_ITEMS} from "../config/appConfig.js"
+import {SITE_MENU_ITEMS, SYSTEM_MENU_ITEMS} from "../config/appConfig.js"
 import {
     IconBrightnessDown,
     IconMoonFilled,
     IconChartHistogram,
     IconDevices2,
-    IconLogout
+    IconLogout,
+    IconWorldCog
 } from '@tabler/icons-react';
 import {useAuth} from '../contexts/AuthProvider'; // 1. Импортирай useAuth
 
@@ -33,11 +34,18 @@ export function AdminLayout() {
     };
 
 
-    const filteredMenu = MENU_ITEMS.filter(item => {
+    const systemFilteredMenu = SYSTEM_MENU_ITEMS.filter(item => {
         if (!item.resource) return true;
 
         return hasPermission(item.resource, item.action);
     });
+
+    const siteFilteredMenu = SITE_MENU_ITEMS.filter(item => {
+        if (!item.resource) return true;
+
+        return hasPermission(item.resource, item.action);
+    });
+
 
     return (
         <AppShell
@@ -84,7 +92,7 @@ export function AdminLayout() {
                     label="System"
                     leftSection={<IconDevices2 stroke={2}/>}
                 >
-                    {filteredMenu.map(item => (
+                    {systemFilteredMenu.map(item => (
                         <NavLink
                             key={item.label}
                             label={item.label}
@@ -92,6 +100,18 @@ export function AdminLayout() {
                             onClick={() => navigate(item.url)}/>
                     ))}
 
+                </NavLink>
+                <NavLink
+                    label="Site"
+                    leftSection={<IconWorldCog  stroke={2}/>}
+                >
+                    {siteFilteredMenu.map(item => (
+                        <NavLink
+                            key={item.label}
+                            label={item.label}
+                            leftSection={<item.icon stroke={2}/>}
+                            onClick={() => navigate(item.url)}/>
+                    ))}
                 </NavLink>
                 {/*<Divider my="md" />*/}
                 <NavLink
