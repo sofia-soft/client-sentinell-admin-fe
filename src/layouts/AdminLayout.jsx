@@ -46,7 +46,6 @@ export function AdminLayout() {
         return hasPermission(item.resource, item.action);
     });
 
-
     return (
         <AppShell
             header={{height: 60}}
