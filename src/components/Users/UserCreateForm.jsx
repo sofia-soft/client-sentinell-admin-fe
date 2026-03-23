@@ -42,7 +42,7 @@ export function UserCreateForm({onSubmit, apiLoading}) {
 
 
     return (
-        <form onSubmit={onSubmit} target={'update'}>
+        <form onSubmit={onSubmit} target={'create'}>
             <TextInput label="Username" name="username" mb="sm"/>
             <PasswordInput label="Password" name="password" mb="sm"/>
 
