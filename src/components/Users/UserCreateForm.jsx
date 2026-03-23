@@ -10,7 +10,7 @@ import {
 import * as rolesApi from "../../api/rolesApi.js";
 import {StatusBadgeToggle} from "./StatusBadgeToggle.jsx";
 
-export function UserCreateForm({onSubmit, apiLoading, updateUserTable}) {
+export function UserCreateForm({onSubmit, apiLoading}) {
     const [roles, setRoles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [opened, setOpened] = useState(false);
@@ -30,7 +30,6 @@ export function UserCreateForm({onSubmit, apiLoading, updateUserTable}) {
                     value: item.uuid,
                     label: item.name,
                 }));
-                updateUserTable(prev => [newUser, ...prev]);
                 setRoles(mappedRoles);
                 setOpened(true);
             }
