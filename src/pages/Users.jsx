@@ -8,12 +8,14 @@ import {Center, Loader, Title} from "@mantine/core";
 import {UserCreateForm} from "../components/Users/UserCreateForm.jsx";
 import {UserUpdateForm} from "../components/Users/UserUpdateForm.jsx";
 import {notifications} from '@mantine/notifications';
+import handleSubmitForms from "../utils/handlerSubmitForms.js"
 
 export function Users() {
     const [users, setUsers] = useState(null);
     const [opened, {open, close}] = useDisclosure(false);
     const [titleDrawer, setTitleDrawer] = useState('');
-    const [contentDrawer, setContentDrawer] = useState(<></>);
+    const [drawerType, setDrawerType] = useState(null);
+    const [selectedUser, setSelectedUser] = useState(null);
     const [loader, setLoader] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -34,93 +36,53 @@ export function Users() {
     const handleSubmitForm = async (event) => {
         event.preventDefault();
         const form = event.target;
-        const formData = new FormData(form);
 
-
-        const data = Object.fromEntries(formData.entries());
-
-        console.log(data)
         setLoading(true);
 
-        let notify;
+        const request = await handleSubmitForms(
+            form.target === 'update'
+                ? usersApi.updateUsers
+                : usersApi.createUser,
+            form
+        );
 
-        if (form.target === 'update') {
-            await usersApi.updateUsers(form.name, data).then(
-                response => {
-                    if (response.status === 200) {
-                        notify = {
-                            "title": "Success",
-                            "color": "green",
-                            "message": response.data.data.message
-                        }
-
-                        setUsers(prev => prev.map(user =>
-                            user.uuid === form.name ? response.data.data.update_user : user
-                        ));
-                    } else {
-                        notify = {
-                            "title": "Fail",
-                            "color": "red",
-                            "message": response.data.data.message
-                        }
-                    }
-                }
-            ).catch(console.error)
-                .finally(setLoading(false))
-
-            notifications.show({
-                title: notify.title,
-                message: notify.message,
-                color: notify.color,
-                position: "top-right"
-            });
-            return
+        if (request.data) {
+            if (form.target === 'update') {
+                setUsers(prev =>
+                    prev.map(user =>
+                        user.uuid === form.name
+                            ? request.data.updated_user
+                            : user
+                    )
+                );
+            } else {
+                setUsers(prev => [request.data.created_user, ...prev]);
+            }
         }
 
-        await usersApi.createUser(data).then(
-            response => {
-                if (response.status === 201) {
-                    notify = {
-                        "title": "Success",
-                        "color": "green",
-                        "message": response.data.data.message
-                    }
-                    // setUsers(prev => [newUser, ...prev]);
-                } else {
-                    notify = {
-                        "title": "Fail",
-                        "color": "red",
-                        "message": response.data.data.message
-                    }
-                }
-            }
-        ).catch(console.error)
-            .finally(setLoading(false))
+        if (request.notify) {
+            notifications.show({
+                title: request.notify.title,
+                message: request.notify.message,
+                color: request.notify.color,
+                position: "top-right"
+            });
+        }
 
+        setLoading(false);
 
     }
+
     const handleEdit = (item) => {
         setTitleDrawer('Update user');
-
-        setContentDrawer(
-            <UserUpdateForm
-                userData={item}
-                onSubmit={handleSubmitForm}
-                apiLoading={loading}
-
-            />
-        );
+        setDrawerType('update');
+        setSelectedUser(item);
         open();
     };
 
     const handleCreate = () => {
         setTitleDrawer('Create user');
-        setContentDrawer(
-            <UserCreateForm
-                onSubmit={handleSubmitForm}
-                apiLoading={loading}
-            />
-        );
+        setDrawerType('create');
         open();
     };
 
@@ -156,7 +118,26 @@ export function Users() {
             <>
                 <Title order={2}>Users</Title>
 
-                <CustomDrawer close={close} opened={opened} title={titleDrawer} content={contentDrawer}/>
+                <CustomDrawer
+                    close={close}
+                    opened={opened}
+                    title={titleDrawer}
+                >
+                    {drawerType === 'create' && (
+                        <UserCreateForm
+                            onSubmit={handleSubmitForm}
+                            apiLoading={loading}
+                        />
+                    )}
+
+                    {drawerType === 'update' && (
+                        <UserUpdateForm
+                            userData={selectedUser}
+                            onSubmit={handleSubmitForm}
+                            apiLoading={loading}
+                        />
+                    )}
+                </CustomDrawer>
 
                 {users && <PageContentTemplate
                     tableData={{header: USER_HEADER, rows: users}}

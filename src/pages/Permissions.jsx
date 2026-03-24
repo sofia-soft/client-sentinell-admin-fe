@@ -1,18 +1,23 @@
 import {PageContentTemplate} from "../components/PageContentTemplate.jsx";
-import {PERMISSIONS_HEADER, PERMISSIONS_DATA, BUTTON_VISIBILITY} from "../config/permissionConfig.js";
+import {PERMISSIONS_HEADER, BUTTON_VISIBILITY} from "../config/permissionConfig.js";
 import {useEffect, useState} from "react";
+import {notifications} from "@mantine/notifications";
 import {useDisclosure} from "@mantine/hooks";
 import * as permissionsApi from "../api/permissionsApi.js";
 import {Center, Loader, Title} from "@mantine/core";
 import {CustomDrawer} from "../components/CustomDrawer.jsx";
 import {PermissionUpdateFrom} from "../components/Permissions/PermissionUpdateFrom.jsx";
 import {PermissionCreateForm} from "../components/Permissions/PermissionCreateForm.jsx";
+import {getErrorMessage} from "../utils/getErrorMessage.js";
+import handleSubmitForms from "../utils/handlerSubmitForms.js";
+import {updatePermissions} from "../api/permissionsApi.js";
 
 export function Permissions() {
     const [permissions, setPermissions] = useState(null);
     const [opened, {open, close}] = useDisclosure(false);
     const [titleDrawer, setTitleDrawer] = useState('');
-    const [contentDrawer, setContentDrawer] = useState(<></>);
+    const [drawerType, setDrawerType] = useState(null);
+    const [selectedPermission, setSelectedPermission] = useState(null);
     const [loader, setLoader] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -30,55 +35,85 @@ export function Permissions() {
     }, []);
 
 
+
+    const handleSubmitForm = async (event) => {
+        event.preventDefault();
+        const form = event.target;
+
+        setLoading(true);
+
+        const request = await handleSubmitForms(
+            form.target === 'update'
+                ? permissionsApi.updatePermissions
+                : permissionsApi.createPermissions,
+            form
+        );
+
+        if (request.data) {
+            if (form.target === 'update') {
+                setPermissions(prev =>
+                    prev.map(permission =>
+                        permission.uuid === form.name
+                            ? request.data.updated_permission
+                            : permission
+                    )
+                );
+            } else {
+                setPermissions(prev => [request.data.created_permission, ...prev]);
+            }
+        }
+
+        if (request.notify) {
+            notifications.show({
+                title: request.notify.title,
+                message: request.notify.message,
+                color: request.notify.color,
+                position: "top-right"
+            });
+        }
+
+        setLoading(false);
+
+    }
+
     const handleEdit = (item) => {
         setTitleDrawer('Update permissions');
-
-        setContentDrawer(
-            <PermissionUpdateFrom
-                permissionData={item}
-                // onSubmit={handleSubmitForm}
-                apiLoading={loading}
-
-            />
-        );
+        setDrawerType('update');
+        setSelectedPermission(item);
         open();
     };
 
     const handleCreate = () => {
         setTitleDrawer('Create permission');
-        setContentDrawer(
-            <PermissionCreateForm
-                // onSubmit={handleSubmitForm}
-                apiLoading={loading}
-            />
-        );
+        setDrawerType('create');
         open();
     };
 
     const handleDelete = async (uuid) => {
-        // const response = await rolesAip.deleteRole(uuid);
+        const response = await permissionsApi.deletePermissions(uuid);
 
         let color;
         let title;
+        const dataResponse = response.data;
 
-        console.log(uuid);
-        //
-        // if (response.status === 200 || response.status === 204) {
-        //
-        //     setRoles(prev => prev.filter(row => row.uuid !== uuid));
-        //     color = 'green'
-        //     title = 'Success'
-        // } else {
-        //     color = 'red'
-        //     title = 'Fail'
-        // }
-        //
-        // notifications.show({
-        //     title: title,
-        //     message: response.data.data.message,
-        //     color: color,
-        //     position: "top-right"
-        // });
+        if (response.status === 200 || response.status === 204) {
+
+            setPermissions(prev => prev.filter(row => row.uuid !== uuid));
+            color = 'green'
+            title = 'Success'
+        } else {
+            color = 'red'
+            title = 'Fail'
+        }
+
+        notifications.show({
+            title: title,
+            message: dataResponse.success || response.status === 200 ?
+                getErrorMessage(dataResponse.data.code) :
+                dataResponse.error.message,
+            color: color,
+            position: "top-right"
+        });
     };
 
 
@@ -90,12 +125,29 @@ export function Permissions() {
             <>
                 <Title order={2}>Permissions</Title>
 
+
                 <CustomDrawer
                     close={close}
                     opened={opened}
                     title={titleDrawer}
-                    content={contentDrawer}
-                />
+                >
+                    {drawerType === 'create' && (
+                        <PermissionCreateForm
+                            onSubmit={handleSubmitForm}
+                            // permissionsHandler={permissionsHandler}
+                            apiLoading={loading}
+                        />
+                    )}
+
+                    {drawerType === 'update' && (
+                        <PermissionUpdateFrom
+                            permissionData={selectedPermission}
+                            onSubmit={handleSubmitForm}
+                            // permissionsHandler={permissionsHandler}
+                            apiLoading={loading}
+                        />
+                    )}
+                </CustomDrawer>
 
                 <PageContentTemplate
                     tableData={

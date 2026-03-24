@@ -12,9 +12,10 @@ import {StatusBadgeToggle} from "./StatusBadgeToggle.jsx";
 
 export function UserCreateForm({onSubmit, apiLoading}) {
     const [roles, setRoles] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loadingRoles, setLoadingRoles] = useState(false);
     const [opened, setOpened] = useState(false);
     const [isActive, setIsActive] = useState(true);
+
 
     const fetchRoles = async () => {
         if (roles.length > 0) {
@@ -22,7 +23,7 @@ export function UserCreateForm({onSubmit, apiLoading}) {
             return;
         }
 
-        setLoading(true);
+        setLoadingRoles(true);
         try {
             const response = await rolesApi.listRoles();
             if (response.status === 200) {
@@ -36,7 +37,7 @@ export function UserCreateForm({onSubmit, apiLoading}) {
         } catch (error) {
             console.error("Грешка при зареждане на роли:", error);
         } finally {
-            setLoading(false);
+            setLoadingRoles(false);
         }
     };
 
@@ -55,20 +56,28 @@ export function UserCreateForm({onSubmit, apiLoading}) {
                 dropdownOpened={opened}
                 onDropdownOpen={fetchRoles}
                 onDropdownClose={() => setOpened(false)}
-                rightSection={loading ? <Loader size="xs" type="dots"/> : null}
+                rightSection={loadingRoles ? <Loader size="xs" type="dots"/> : null}
                 nothingFoundMessage="Няма намерени роли"
             />
 
-            <StatusBadgeToggle
-                key='is_active'
-                active={isActive}
-                onChange={setIsActive}
+            <Select
+                key={'is_active'}
+                id='is_active'
+                name={'is_active'}
+                label="Status"
+                defaultValue="active"
+                data={[
+                    {value: "active", label: "Active"},
+                    {value: "inactive", label: "Inactive"},
+                ]}
             />
 
             <Button
+                mt={20}
                 type="submit"
                 fullWidth
                 loading={apiLoading}
+                loaderProps={{ type: 'dots' }}
             >
                 Create
             </Button>

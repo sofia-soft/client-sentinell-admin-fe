@@ -12,15 +12,14 @@ import {
     Paper
 } from "@mantine/core";
 
-export function PermissionUpdateFrom({permissionData,onSubmit,apiLoading})
-{
+export function PermissionUpdateFrom({permissionData, onSubmit, apiLoading}) {
 
-    const fetchResources = () => {
-
-    }
+    // const fetchResources = () => {
+    //
+    // }
 
     return (
-        <>
+        <form onSubmit={onSubmit} target={'update'} name={permissionData.uuid}>
             <Tabs defaultValue="general">
 
                 <Tabs.List>
@@ -32,6 +31,9 @@ export function PermissionUpdateFrom({permissionData,onSubmit,apiLoading})
                     <Stack>
 
                         <TextInput
+                            key={'resource'}
+                            id='resource'
+                            name={'resource'}
                             label="Resource"
                             placeholder="users"
                             defaultValue={permissionData?.resource}
@@ -39,6 +41,9 @@ export function PermissionUpdateFrom({permissionData,onSubmit,apiLoading})
                         />
 
                         <TextInput
+                            key={'action'}
+                            id='action'
+                            name={'action'}
                             label="Action"
                             placeholder="create / read / update / delete"
                             defaultValue={permissionData?.action}
@@ -46,12 +51,18 @@ export function PermissionUpdateFrom({permissionData,onSubmit,apiLoading})
                         />
 
                         <Textarea
+                            key={'description'}
+                            id='description'
+                            name={'description'}
                             label="Description"
                             placeholder="Describe what this permission allows..."
                             defaultValue={permissionData?.description}
                         />
 
                         <Switch
+                            key={'is_system'}
+                            id='is_system'
+                            name={'is_system'}
                             label="System Permission"
                             description="System permissions cannot be deleted"
                             checked={permissionData?.is_system}
@@ -111,10 +122,15 @@ export function PermissionUpdateFrom({permissionData,onSubmit,apiLoading})
             <Divider my="md"/>
 
             <Group justify="flex-end">
-                <Button fullWidth>
+                <Button
+                    type="submit"
+                    fullWidth mt="md"
+                    loading={apiLoading}
+                    loaderProps={{type: 'dots'}}
+                >
                     Save Changes
                 </Button>
             </Group>
-        </>
+        </form>
     )
 }

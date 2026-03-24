@@ -63,10 +63,16 @@ export function UserUpdateForm({userData, onSubmit, apiLoading}) {
                     );
                 } else if (key === 'is_active') {
                     return (
-                        <StatusBadgeToggle
-                            key={key}
-                            active={isActive}
-                            onChange={setIsActive}
+                        <Select
+                            key={'is_active'}
+                            id='is_active'
+                            name={'is_active'}
+                            label="Status"
+                            defaultValue={value ? "active" : "inactive"}
+                            data={[
+                                {value: "active", label: "Active"},
+                                {value: "inactive", label: "Inactive"},
+                            ]}
                         />
                     );
                 }
@@ -87,6 +93,7 @@ export function UserUpdateForm({userData, onSubmit, apiLoading}) {
                 type="submit"
                 fullWidth mt="md"
                 loading={apiLoading}
+                loaderProps={{ type: 'dots' }}
             >
                 Save
             </Button>
