@@ -1,17 +1,19 @@
 import {Drawer} from "@mantine/core";
 
-export function CustomDrawer(
-    {
-        title,
-        content,
-        opened,
-        close
-    }
-) {
-
+export function CustomDrawer({
+                                 title,
+                                 opened,
+                                 close,
+                                 children
+                             }) {
     return (
-        <Drawer opened={opened} onClose={close} title={title} position={"right"}>
-            {content}
+        <Drawer
+            opened={opened}
+            onClose={close}
+            title={title}
+            position="right"
+        >
+            {children}
         </Drawer>
-    )
+    );
 }

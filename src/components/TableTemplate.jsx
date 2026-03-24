@@ -78,7 +78,7 @@ export function TableTemplate(
 
                             ))}
                             {actionShow &&
-                                <Table.Td key={'actions-col'} class='actions'>
+                                <Table.Td key={'actions-col'} className='actions'>
 
                                     {
                                         hasPermission(resourceName, 'update') &&
@@ -110,7 +110,7 @@ export function TableTemplate(
                     ))}
 
                     {isEmpty && (
-                        <div class='no-data-section'>
+                        <div className='no-data-section'>
                             <Image src={Nodata}
                                    w={250}/>
                             <Text c="dimmed" mt="sm">Няма намерени данни</Text>

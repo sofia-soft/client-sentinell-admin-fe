@@ -9,6 +9,8 @@ import {CustomDrawer} from "../components/CustomDrawer.jsx";
 import {notifications} from "@mantine/notifications";
 import {RoleUpdateForm} from "../components/Roles/RoleUpdateForm.jsx";
 import {RoleCreateForm} from "../components/Roles/RoleCreateForm.jsx";
+import {getErrorMessage} from "../utils/getErrorMessage.js";
+import handleSubmitForms from "../utils/handlerSubmitForms.js";
 
 export function Roles() {
     const [roles, setRoles] = useState(null);
@@ -20,7 +22,6 @@ export function Roles() {
 
     const [loader, setLoader] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [permissions, setPermissions] = useState([]);
 
 
     useEffect(() => {
@@ -69,6 +70,53 @@ export function Roles() {
         return [];
     };
 
+    const handleSubmitForm = async (event) => {
+        event.preventDefault();
+        const form = event.target;
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        // console.log(formData)
+
+        // console.log()
+
+        console.log(data)
+        setLoading(true);
+
+        const request = await handleSubmitForms(
+            form.target === 'update'
+                ? rolesAip.updateRole
+                : rolesAip.createRole,
+            form
+        );
+
+        if (request.data) {
+            if (form.target === 'update') {
+                setRoles(prev =>
+                    prev.map(role =>
+                        role.uuid === form.name
+                            ? request.data.updated_role
+                            : role
+                    )
+                );
+            } else {
+                setRoles(prev => [request.data.created_role, ...prev]);
+            }
+        }
+
+        if (request.notify) {
+            notifications.show({
+                title: request.notify.title,
+                message: request.notify.message,
+                color: request.notify.color,
+                position: "top-right"
+            });
+        }
+
+        setLoading(false);
+
+    }
+
     const handleEdit = (item) => {
         setDrawerType('update');
         setSelectedRole(item);
@@ -84,29 +132,30 @@ export function Roles() {
 
 
     const handleDelete = async (uuid) => {
-        // const response = await rolesAip.deleteRole(uuid);
+        const response = await rolesAip.deleteRole(uuid);
 
         let color;
         let title;
+        const dataResponse = response.data;
 
-        console.log(uuid);
-        //
-        // if (response.status === 200 || response.status === 204) {
-        //
-        //     setRoles(prev => prev.filter(row => row.uuid !== uuid));
-        //     color = 'green'
-        //     title = 'Success'
-        // } else {
-        //     color = 'red'
-        //     title = 'Fail'
-        // }
-        //
-        // notifications.show({
-        //     title: title,
-        //     message: response.data.data.message,
-        //     color: color,
-        //     position: "top-right"
-        // });
+        if (response.status === 200 || response.status === 204) {
+
+            setRoles(prev => prev.filter(row => row.uuid !== uuid));
+            color = 'green'
+            title = 'Success'
+        } else {
+            color = 'red'
+            title = 'Fail'
+        }
+
+        notifications.show({
+            title: title,
+            message: dataResponse.success ?
+                getErrorMessage(dataResponse.data.code) :
+                dataResponse.error.message,
+            color: color,
+            position: "top-right"
+        });
     };
 
     return (
@@ -122,19 +171,25 @@ export function Roles() {
                     close={close}
                     opened={opened}
                     title={titleDrawer}
-                    content={
-                        drawerType === 'update' ? (
-                            <RoleUpdateForm
-                                roleData={selectedRole}
-                                permissionsHandler={permissionsHandler}
-                            />
-                        ) : (
-                            <RoleCreateForm
-                                permissionsHandler={permissionsHandler}
-                            />
-                        )
-                    }
-                />
+                >
+                    {drawerType === 'create' && (
+                        <RoleCreateForm
+                            onSubmit={handleSubmitForm}
+                            permissionsHandler={permissionsHandler}
+                            apiLoading={loading}
+                        />
+                    )}
+
+                    {drawerType === 'update' && (
+                        <RoleUpdateForm
+                            roleData={selectedRole}
+                            onSubmit={handleSubmitForm}
+                            permissionsHandler={permissionsHandler}
+                            apiLoading={loading}
+                        />
+                    )}
+                </CustomDrawer>
+
 
                 <PageContentTemplate
                     tableData={

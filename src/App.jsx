@@ -1,29 +1,33 @@
-import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
-import {Notifications} from '@mantine/notifications';
-import {MantineProvider} from '@mantine/core';
-import {AdminLayout} from './layouts/AdminLayout';
-import {AuthGuard} from './components/AuthGuard';
-import {myTheme} from './theme';
-import {Dashboard} from "./pages/Dashboard.jsx";
-import {Users} from "./pages/Users.jsx";
-import {Roles} from "./pages/Roles.jsx";
-import {Permissions} from "./pages/Permissions.jsx";
-import {LoginPage} from "./pages/LoginPage.jsx";
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Notifications } from '@mantine/notifications';
+import { MantineProvider } from '@mantine/core';
+import { AdminLayout } from './layouts/AdminLayout';
+import { AuthGuard } from './components/AuthGuard';
+import { myTheme } from './theme';
+import { Dashboard } from "./pages/Dashboard.jsx";
+import { Users } from "./pages/Users.jsx";
+import { Roles } from "./pages/Roles.jsx";
+import { Permissions } from "./pages/Permissions.jsx";
+import { LoginPage } from "./pages/LoginPage.jsx";
+import { AuthProvider, useAuth } from './contexts/AuthProvider.jsx';
 import {Reviews} from "./pages/Reviews.jsx";
 import {Orders} from "./pages/Orders.jsx";
 import {Cart} from "./pages/Cart.jsx";
 import {Products} from "./pages/Products.jsx";
 import {Categories} from "./pages/Categories.jsx";
-import {AuthProvider, useAuth} from './contexts/AuthProvider.jsx';
 import {Customers} from "./pages/Customers.jsx";
+import {ModalsProvider} from '@mantine/modals';
+
 
 function App() {
     return (
         <MantineProvider theme={myTheme}>
             <Notifications/>
-            <AuthProvider>
-                <AppRouter/>
-            </AuthProvider>
+            <ModalsProvider>
+                <AuthProvider>
+                    <AppRouter/>
+                </AuthProvider>
+            </ModalsProvider>
         </MantineProvider>
     );
 }

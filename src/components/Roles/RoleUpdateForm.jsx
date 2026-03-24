@@ -11,7 +11,7 @@ import {
     Text,
     Divider,
     Paper,
-    Loader ,
+    Loader,
     Grid,
     Checkbox,
     Center
@@ -29,9 +29,11 @@ export function RoleUpdateForm({roleData, onSubmit, apiLoading, permissionsHandl
         setLoading(false);
     };
 
+    console.log(roleData)
+
     return (
-        <>
-            <Tabs defaultValue="general" >
+        <form onSubmit={onSubmit} target={'update'} name={roleData.uuid}>
+            <Tabs defaultValue="general">
                 <Tabs.List>
                     <Tabs.Tab value="general">General</Tabs.Tab>
                     <Tabs.Tab value="permissions" onClick={loadPermissions}>Permissions</Tabs.Tab>
@@ -42,6 +44,9 @@ export function RoleUpdateForm({roleData, onSubmit, apiLoading, permissionsHandl
                     <Stack>
 
                         <TextInput
+                            key={'role_name'}
+                            id='role_name'
+                            name={'role_name'}
                             label="Role Name"
                             placeholder="Administrator"
                             defaultValue={roleData?.name}
@@ -49,12 +54,18 @@ export function RoleUpdateForm({roleData, onSubmit, apiLoading, permissionsHandl
                         />
 
                         <Textarea
+                            key={'description'}
+                            id='description'
+                            name={'description'}
                             label="Description"
                             placeholder="Describe this role..."
                             defaultValue={roleData?.description}
                         />
 
                         <Select
+                            key={'is_active'}
+                            id='is_active'
+                            name={'is_active'}
                             label="Status"
                             defaultValue={roleData?.is_active ? 'active' : 'inactive'}
                             data={[
@@ -64,6 +75,9 @@ export function RoleUpdateForm({roleData, onSubmit, apiLoading, permissionsHandl
                         />
 
                         <Switch
+                            key={'is_system'}
+                            id='is_system'
+                            name={'is_system'}
                             label="System Role"
                             description="System roles cannot be deleted"
                             defaultChecked={roleData?.is_system}
@@ -87,13 +101,13 @@ export function RoleUpdateForm({roleData, onSubmit, apiLoading, permissionsHandl
                 <Tabs.Panel value="permissions" pt="md" loader>
                     {loading ? (
                         <Center py="xl">
-                            <Loader color="blue" type="dots" />
+                            <Loader color="blue" type="dots"/>
                         </Center>
                     ) : (
                         <Stack>
                             {permissions.map((module) => (
                                 <Paper key={module.name} withBorder p="md" shadow="xs">
-                                    <Text fw={600} mb="sm" style={{ textTransform: 'capitalize' }}>
+                                    <Text fw={600} mb="sm" style={{textTransform: 'capitalize'}}>
                                         {module.name}
                                     </Text>
 
@@ -101,7 +115,9 @@ export function RoleUpdateForm({roleData, onSubmit, apiLoading, permissionsHandl
                                         {module.actions.map((action) => (
                                             <Grid.Col span={3} key={action.uuid}>
                                                 <Checkbox
+                                                    name="permissions"
                                                     label={action.action}
+                                                    value={action.uuid}
                                                     // description={action.description}
                                                     defaultChecked={roleData?.permissions?.some(p => p.uuid === action.uuid)}
                                                 />
@@ -159,11 +175,16 @@ export function RoleUpdateForm({roleData, onSubmit, apiLoading, permissionsHandl
             <Divider my="md"/>
 
             <Group justify="flex-end">
-                <Button fullWidth>
+                <Button
+                    type="submit"
+                    fullWidth mt="md"
+                    loading={apiLoading}
+                    loaderProps={{type: 'dots'}}
+                >
                     Save Changes
                 </Button>
             </Group>
-        </>
+        </form>
     );
 }
 

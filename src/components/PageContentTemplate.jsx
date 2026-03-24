@@ -84,7 +84,7 @@ export function PageContentTemplate(
     const to = Math.min(currentPage * limit, total);
 
     return (
-        <Container mt={20} mx={"3%"} mb={"2%"}fluid>
+        <Container mt={20} mx={"3%"} mb={"2%"} fluid>
             <Flex justify={"space-between"}>
                 <Flex gap="xs">
                     {canShow('search') && (

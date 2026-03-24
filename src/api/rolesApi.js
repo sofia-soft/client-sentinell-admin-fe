@@ -4,7 +4,7 @@ const BaseUrl = '/api/v1/roles';
 
 export const listRoles = async () => requester.get(`${BaseUrl}/`);
 export const createRole = async (data) => requester.post(`${BaseUrl}/create/`, data);
-export const updateRole= async (uuid) => requester.put(`${BaseUrl}/update/${uuid}/`);
+export const updateRole= async (uuid, data) => requester.put(`${BaseUrl}/update/${uuid}/`, data);
 export const getRole = async (uuid) => requester.get(`${BaseUrl}/${uuid}/`);
 export const deleteRole = async (uuid) => requester.del(`${BaseUrl}/delete/${uuid}/`);
 export const assignRole = async (uuid) => requester.post(`${BaseUrl}/assign_user_role/${uuid}/`);
