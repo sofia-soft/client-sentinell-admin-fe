@@ -13,8 +13,6 @@ import {
     Grid,
     Checkbox, Center, Loader
 } from "@mantine/core";
-import {useState} from "react";
-
 export function RoleCreateForm({onSubmit, permissionsHandler, apiLoading}) {
     const [roleName, setRoleName] = useState('');
     const [loading, setLoading] = useState(false);
@@ -134,3 +132,5 @@ export function RoleCreateForm({onSubmit, permissionsHandler, apiLoading}) {
         </form>
     )
 }
+
+import {useState} from "react";

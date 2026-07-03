@@ -35,7 +35,6 @@ export const USER_HEADER = [
     {key: "id", value: "ID"},
     {key: "username", value: 'Username'},
     {key: "role", value: 'Role'},
-    {key: "created_at", value: 'Created at'},
-    {key: "updated_at", value: 'Updated ad'},
+    {key: "dates", value: "Audit Dates"},
     {key: "is_active", value: 'Status'}
 ]

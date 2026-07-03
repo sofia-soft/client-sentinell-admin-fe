@@ -29,8 +29,6 @@ export function RoleUpdateForm({roleData, onSubmit, apiLoading, permissionsHandl
         setLoading(false);
     };
 
-    console.log(roleData)
-
     return (
         <form onSubmit={onSubmit} target={'update'} name={roleData.uuid}>
             <Tabs defaultValue="general">
@@ -119,7 +117,7 @@ export function RoleUpdateForm({roleData, onSubmit, apiLoading, permissionsHandl
                                                     label={action.action}
                                                     value={action.uuid}
                                                     // description={action.description}
-                                                    defaultChecked={roleData?.permissions?.some(p => p.uuid === action.uuid)}
+                                                    checked={roleData?.permissions?.some(p => p.uuid === action.uuid) || false}
                                                 />
                                             </Grid.Col>
                                         ))}

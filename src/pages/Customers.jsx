@@ -7,10 +7,14 @@ import {CustomDrawer} from "../components/CustomDrawer.jsx";
 import {CustomersCreateForm} from "../components/Customers/CustomersCreateForm.jsx";
 import {CustomersUpdateForm} from "../components/Customers/CustomersUpdateForm.jsx";
 import {useDisclosure} from "@mantine/hooks";
+import handleSubmitForms from "../utils/handlerSubmitForms.js";
+import {notifications} from "@mantine/notifications";
+import {CustomConfirmModal} from "../components/CustomConfirmModal.jsx";
+
 export function Customers() {
     const [loader, setLoader] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [customers, setCustomer] = useState([]);
+    const [customers, setCustomers] = useState([]);
     const [opened, {open, close}] = useDisclosure(false);
 
     const [titleDrawer, setTitleDrawer] = useState('');
@@ -24,7 +28,7 @@ export function Customers() {
         customerApi.listCustomers()
             .then(response => {
                 if (response.status === 200) {
-                    setCustomer(response.data.data)
+                    setCustomers(response.data.data)
                 }
             })
             .catch(console.error)
@@ -32,7 +36,47 @@ export function Customers() {
     }, []);
 
 
+    const handleSubmitForm = async (event) => {
+        event.preventDefault();
+        const form = event.target;
 
+        setLoading(true);
+
+        const request = await handleSubmitForms(
+            form.target === 'update'
+                ? customerApi.updateCustomer
+                : customerApi.createCustomer,
+            form
+        );
+
+        if (request.data) {
+            if (form.target === 'update') {
+
+                setCustomers(prev =>
+                    prev.map(user =>
+                        user.uuid === form.name
+                            ? request.data.updated_customer
+                            : user
+                    )
+                );
+            } else {
+                setCustomers(prev => [request.data.created_customer, ...prev]);
+            }
+        }
+
+
+        if (request.notify) {
+            notifications.show({
+                title: request.notify.title,
+                message: request.notify.message,
+                color: request.notify.color,
+                position: "top-right"
+            });
+        }
+
+        setLoading(false);
+
+    }
     const handleEdit = (item) => {
         setTitleDrawer('Update customer');
         setDrawerType('update');
@@ -44,6 +88,40 @@ export function Customers() {
         setTitleDrawer('Create customer');
         setDrawerType('create');
         open();
+    };
+
+
+    const handleDelete = async (uuid) => {
+        let color;
+        let title;
+
+        CustomConfirmModal({
+            title: 'Delete category',
+            description: 'Are you sure, that you wanna delete this category?',
+            confirmLabel: 'Delete',
+            cancelLabel: 'Close',
+            confirmColor: 'red',
+            onConfirm: async () => {
+                const response = await customerApi.deleteCustomer(uuid);
+                if (response.status === 200 || response.status === 204) {
+
+                    setCustomers(prev => prev.filter(row => row.uuid !== uuid));
+                    color = 'green'
+                    title = 'Success'
+                } else {
+                    color = 'red'
+                    title = 'Fail'
+                }
+
+                notifications.show({
+                    title: title,
+                    message: response.data.data.message,
+                    color: color,
+                    position: "top-right"
+                });
+
+            },
+        });
     };
 
 
@@ -62,7 +140,7 @@ export function Customers() {
                 >
                     {drawerType === 'create' && (
                         <CustomersCreateForm
-                            // onSubmit={handleSubmitForm}
+                            onSubmit={handleSubmitForm}
                             apiLoading={loading}
                         />
                     )}
@@ -70,7 +148,7 @@ export function Customers() {
                     {drawerType === 'update' && (
                         <CustomersUpdateForm
                             customerData={selectedCustomers}
-                            // onSubmit={handleSubmitForm}
+                            onSubmit={handleSubmitForm}
                             apiLoading={loading}
                         />
                     )}
@@ -88,7 +166,7 @@ export function Customers() {
                     buttonsVisible={BUTTON_VISIBILITY}
                     resourceName="prodcuts"
                     onEdit={handleEdit}
-                    // onDelete={handleDelete}
+                    onDelete={handleDelete}
                     onCreate={handleCreate}
 
                 />

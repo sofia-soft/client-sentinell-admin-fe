@@ -10,7 +10,8 @@ import {PermissionUpdateFrom} from "../components/Permissions/PermissionUpdateFr
 import {PermissionCreateForm} from "../components/Permissions/PermissionCreateForm.jsx";
 import {getErrorMessage} from "../utils/getErrorMessage.js";
 import handleSubmitForms from "../utils/handlerSubmitForms.js";
-import {updatePermissions} from "../api/permissionsApi.js";
+import {CustomConfirmModal} from "../components/CustomConfirmModal.jsx";
+import * as categoryApi from "../api/categoriesApi.js";
 
 export function Permissions() {
     const [permissions, setPermissions] = useState(null);
@@ -33,7 +34,6 @@ export function Permissions() {
         }).catch(console.error)
             .finally(() => setLoader(false));
     }, []);
-
 
 
     const handleSubmitForm = async (event) => {
@@ -90,29 +90,40 @@ export function Permissions() {
     };
 
     const handleDelete = async (uuid) => {
-        const response = await permissionsApi.deletePermissions(uuid);
 
         let color;
         let title;
-        const dataResponse = response.data;
 
-        if (response.status === 200 || response.status === 204) {
+        CustomConfirmModal({
+            title: 'Delete permission',
+            description: 'Are you sure, that you wanna delete this permission?',
+            confirmLabel: 'Delete',
+            cancelLabel: 'Close',
+            confirmColor: 'red',
+            onConfirm: async () => {
+                const response = await permissionsApi.deletePermissions(uuid);
+                const dataResponse = response.data;
 
-            setPermissions(prev => prev.filter(row => row.uuid !== uuid));
-            color = 'green'
-            title = 'Success'
-        } else {
-            color = 'red'
-            title = 'Fail'
-        }
+                if (response.status === 200 || response.status === 204) {
 
-        notifications.show({
-            title: title,
-            message: dataResponse.success || response.status === 200 ?
-                getErrorMessage(dataResponse.data.code) :
-                dataResponse.error.message,
-            color: color,
-            position: "top-right"
+                    setPermissions(prev => prev.filter(row => row.uuid !== uuid));
+                    color = 'green'
+                    title = 'Success'
+                } else {
+                    color = 'red'
+                    title = 'Fail'
+                }
+
+                notifications.show({
+                    title: title,
+                    message: dataResponse.success || response.status === 200 ?
+                        getErrorMessage(dataResponse.data.code) :
+                        dataResponse.error.message,
+                    color: color,
+                    position: "top-right"
+                });
+
+            },
         });
     };
 
@@ -134,7 +145,6 @@ export function Permissions() {
                     {drawerType === 'create' && (
                         <PermissionCreateForm
                             onSubmit={handleSubmitForm}
-                            // permissionsHandler={permissionsHandler}
                             apiLoading={loading}
                         />
                     )}
@@ -143,7 +153,6 @@ export function Permissions() {
                         <PermissionUpdateFrom
                             permissionData={selectedPermission}
                             onSubmit={handleSubmitForm}
-                            // permissionsHandler={permissionsHandler}
                             apiLoading={loading}
                         />
                     )}

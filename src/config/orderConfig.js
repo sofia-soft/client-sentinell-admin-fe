@@ -1,13 +1,12 @@
-import {IconUser, IconUserCheck} from "@tabler/icons-react";
-
 export const ORDER_HEADER = [
     {key: "id", value: "ID"},
     {key: "tracking_number", value: "Tracking Number"},
     {key: "customer", value: "Customer"},
-    // {key: "items", value: "Items"},
+    {key: "items", value: "Items"},
     {key: "status", value: "Status"},
-    {key: "created_at", value: "Created At"},
-    {key: "updated_at", value: "Updated At"},
+    {key: "shipping_address", value: "Shipping Address"},
+    {key: "speedy_office", value: "Speedy Office"},
+    {key: "dates", value: "Audit Dates"}
 ];
 
 export const BUTTON_VISIBILITY = {

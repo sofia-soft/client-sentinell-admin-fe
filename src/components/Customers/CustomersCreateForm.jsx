@@ -44,6 +44,9 @@ export function CustomersCreateForm({onSubmit, apiLoading}) {
                                 <Select
                                     label="Username"
                                     data={users}
+                                    key={'user_uuid'}
+                                    id='user_uuid'
+                                    name={'user_uuid'}
                                 />
                                 <TextInput
                                     key={'first_name'}

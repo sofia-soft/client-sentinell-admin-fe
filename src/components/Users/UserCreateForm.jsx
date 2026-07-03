@@ -14,7 +14,6 @@ export function UserCreateForm({onSubmit, apiLoading}) {
     const [roles, setRoles] = useState([]);
     const [loadingRoles, setLoadingRoles] = useState(false);
     const [opened, setOpened] = useState(false);
-    const [isActive, setIsActive] = useState(true);
 
 
     const fetchRoles = async () => {

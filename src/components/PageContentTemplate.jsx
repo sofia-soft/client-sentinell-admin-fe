@@ -19,6 +19,7 @@ export function PageContentTemplate(
         renderCell,
         meta,
         onPageChange,
+        updateStatus = null
     }) {
     const {hasPermission} = useAuth();
     const [search, setSearch] = useState('');
@@ -56,8 +57,9 @@ export function PageContentTemplate(
     const lastPage = isBeMode ? meta.last_page : Math.ceil(total / limit) || 1;
 
     const pagedRows = isBeMode
-        ? filteredData  // BE вече е нарязал данните
+        ? filteredData
         : filteredData.slice((currentPage - 1) * limit, currentPage * limit);
+
 
     const handleSearch = (val) => {
         setSearch(val);
@@ -150,6 +152,7 @@ export function PageContentTemplate(
                     onDelete={onDelete}
                     onView={onView}
                     renderCell={renderCell}
+                    updateStatus={updateStatus}
                 />
             </Box>
 

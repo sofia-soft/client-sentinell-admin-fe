@@ -9,6 +9,7 @@ import {UserCreateForm} from "../components/Users/UserCreateForm.jsx";
 import {UserUpdateForm} from "../components/Users/UserUpdateForm.jsx";
 import {notifications} from '@mantine/notifications';
 import handleSubmitForms from "../utils/handlerSubmitForms.js"
+import {CustomConfirmModal} from "../components/CustomConfirmModal.jsx";
 
 export function Users() {
     const [users, setUsers] = useState(null);
@@ -48,6 +49,7 @@ export function Users() {
 
         if (request.data) {
             if (form.target === 'update') {
+
                 setUsers(prev =>
                     prev.map(user =>
                         user.uuid === form.name
@@ -59,6 +61,7 @@ export function Users() {
                 setUsers(prev => [request.data.created_user, ...prev]);
             }
         }
+
 
         if (request.notify) {
             notifications.show({
@@ -87,26 +90,36 @@ export function Users() {
     };
 
     const handleDelete = async (uuid) => {
-        const response = await usersApi.deleteUser(uuid);
         let color;
         let title;
 
 
-        if (response.status === 200 || response.status === 204) {
+        CustomConfirmModal({
+            title: 'Delete review',
+            description: 'Are you sure, that you wanna delete this review?',
+            confirmLabel: 'Delete',
+            cancelLabel: 'Close',
+            confirmColor: 'red',
+            onConfirm: async () => {
+                const response = await usersApi.deleteUser(uuid);
 
-            setUsers(prev => prev.filter(row => row.uuid !== uuid));
-            color = 'green'
-            title = 'Success'
-        } else {
-            color = 'red'
-            title = 'Fail'
-        }
+                if (response.status === 200 || response.status === 204) {
 
-        notifications.show({
-            title: title,
-            message: response.data.data.message,
-            color: color,
-            position: "top-right"
+                    setUsers(prev => prev.filter(row => row.uuid !== uuid));
+                    color = 'green'
+                    title = 'Success'
+                } else {
+                    color = 'red'
+                    title = 'Fail'
+                }
+
+                notifications.show({
+                    title: title,
+                    message: response.data.data.message,
+                    color: color,
+                    position: "top-right"
+                });
+            },
         });
     };
 

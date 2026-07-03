@@ -7,6 +7,9 @@ import {useDisclosure} from "@mantine/hooks";
 import {CustomDrawer} from "../components/CustomDrawer.jsx";
 import {CategoriesCreateForm} from "../components/Categories/CategoriesCreateForm.jsx";
 import {CategoriesUpdateForm} from "../components/Categories/CategoriesUpdateForm.jsx";
+import {notifications} from "@mantine/notifications";
+import handleSubmitForms from "../utils/handlerSubmitForms.js";
+import {CustomConfirmModal} from "../components/CustomConfirmModal.jsx";
 
 export function Categories() {
     const [loader, setLoader] = useState(false);
@@ -33,6 +36,48 @@ export function Categories() {
     }, []);
 
 
+    const handleSubmitForm = async (event) => {
+        event.preventDefault();
+        const form = event.target;
+
+        setLoading(true);
+
+        const request = await handleSubmitForms(
+            form.target === 'update'
+                ? categoryApi.updateCategory
+                : categoryApi.createCategory,
+            form
+        );
+
+        if (request.data) {
+            if (form.target === 'update') {
+
+                setCategories(prev =>
+                    prev.map(user =>
+                        user.uuid === form.name
+                            ? request.data.updated_category
+                            : user
+                    )
+                );
+            } else {
+                setCategories(prev => [request.data.created_category, ...prev]);
+            }
+        }
+
+
+        if (request.notify) {
+            notifications.show({
+                title: request.notify.title,
+                message: request.notify.message,
+                color: request.notify.color,
+                position: "top-right"
+            });
+        }
+
+        setLoading(false);
+
+    }
+
     const handleEdit = (item) => {
         setTitleDrawer('Update category');
         setDrawerType('update');
@@ -46,6 +91,38 @@ export function Categories() {
         open();
     };
 
+
+    const handleDelete = async (uuid) => {
+        let color;
+        let title;
+
+        CustomConfirmModal({
+            title: 'Delete category',
+            description: 'Are you sure, that you wanna delete this category?',
+            confirmLabel: 'Delete',
+            cancelLabel: 'Close',
+            confirmColor: 'red',
+            onConfirm: async () => {
+                const response = await categoryApi.deleteCategory(uuid);
+                if (response.status === 200 || response.status === 204) {
+
+                    setCategories(prev => prev.filter(row => row.uuid !== uuid));
+                    color = 'green'
+                    title = 'Success'
+                } else {
+                    color = 'red'
+                    title = 'Fail'
+                }
+
+                notifications.show({
+                    title: title,
+                    message: response.data.data.message,
+                    color: color,
+                    position: "top-right"
+                });
+            },
+        });
+    };
 
     return (
         loader ?
@@ -62,7 +139,7 @@ export function Categories() {
                 >
                     {drawerType === 'create' && (
                         <CategoriesCreateForm
-                            // onSubmit={handleSubmitForm}
+                            onSubmit={handleSubmitForm}
                             apiLoading={loading}
                         />
                     )}
@@ -70,7 +147,7 @@ export function Categories() {
                     {drawerType === 'update' && (
                         <CategoriesUpdateForm
                             customerData={selectedCategories}
-                            // onSubmit={handleSubmitForm}
+                            onSubmit={handleSubmitForm}
                             apiLoading={loading}
                         />
                     )}
@@ -87,7 +164,7 @@ export function Categories() {
                     buttonsVisible={BUTTON_VISIBILITY}
                     resourceName="prodcuts"
                     onEdit={handleEdit}
-                    // onDelete={handleDelete}
+                    onDelete={handleDelete}
                     onCreate={handleCreate}
 
                 />

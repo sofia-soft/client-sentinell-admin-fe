@@ -13,11 +13,20 @@ export function CategoriesCreateForm({onSubmit, apiLoading}) {
                     <Stack>
 
                         <TextInput
-                            key={'name'}
-                            id='name'
-                            name={'name'}
-                            label="Categorie Name"
+                            key={'name_bg'}
+                            id='name_bg'
+                            name={'name_bg'}
+                            label="Categorie BG Name"
                             placeholder="Оръжия"
+                            required
+                        />
+
+                        <TextInput
+                            key={'name_en'}
+                            id='name_en'
+                            name={'name_en'}
+                            label="Categorie EN Name"
+                            placeholder="Weapon"
                             required
                         />
 

@@ -8,7 +8,7 @@ import {
     Center,
     Card,
     Stack,
-    Title
+    Title, Menu, Badge, Group,Text
 } from '@mantine/core';
 import Login from "../assets/login.svg"
 import {useForm} from '@mantine/form';
@@ -20,7 +20,13 @@ import {notifications} from '@mantine/notifications';
 export function LoginPage() {
     const {login} = useAuth();
     const [loading, setLoading] = useState(false);
+    const [currentEnv, setCurrentEnv] = useState(localStorage.getItem("api-env") || "prod")
 
+    const changeEnv = (env) => {
+        setCurrentEnv(env)
+        localStorage.setItem("api-env", env.toUpperCase());
+        window.location.reload();
+    };
     const form = useForm({
         mode: 'controlled',
         initialValues: {username: '', password: ''},
@@ -98,7 +104,33 @@ export function LoginPage() {
                                 Влез
                             </Button>
                         </form>
+                        <Group>
+                            <Text c="dimmed">Environment: </Text>
+                            <Menu>
+                                <Menu.Target>
+                                    <Badge
+                                        variant="outline"
+                                    >
+                                        {currentEnv.toUpperCase()}
+                                    </Badge>
+                                </Menu.Target>
+
+                                <Menu.Dropdown align="end">
+                                    <Menu.Item onClick={() => changeEnv("prod")}>
+                                        🟢 Production
+                                    </Menu.Item>
+
+                                    <Menu.Item onClick={() => changeEnv("test")}>
+                                        🔵 Test
+                                    </Menu.Item>
+                                    <Menu.Item onClick={() => changeEnv("dev")}>
+                                        🟡 Development
+                                    </Menu.Item>
+                                </Menu.Dropdown>
+                        </Menu>
+                            </Group>
                     </Stack>
+
                 </Flex>
             </Card>
         </Center>

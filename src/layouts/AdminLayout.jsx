@@ -7,7 +7,7 @@ import {
     ActionIcon,
     Text,
     Avatar,
-    useMantineColorScheme
+    useMantineColorScheme, Badge, Menu
 } from '@mantine/core';
 import {useDisclosure} from '@mantine/hooks';
 import {Outlet, useNavigate} from 'react-router-dom';
@@ -21,13 +21,21 @@ import {
     IconLogout,
     IconWorldCog
 } from '@tabler/icons-react';
-import {useAuth} from '../contexts/AuthProvider'; // 1. Импортирай useAuth
+import {useAuth} from '../contexts/AuthProvider';
+import {useState} from "react";
 
 export function AdminLayout() {
     const {logout, hasPermission} = useAuth();
     const [opened, {toggle}] = useDisclosure();
     const navigate = useNavigate();
     const {colorScheme, setColorScheme} = useMantineColorScheme();
+    const [currentEnv, setCurrentEnv] =  useState(localStorage.getItem("api-env") || "prod")
+
+    const changeEnv = (env) => {
+        setCurrentEnv(env)
+        localStorage.setItem("api-env", env.toUpperCase());
+        window.location.reload();
+    };
 
     const handleLogout = async () => {
         await logout();
@@ -63,6 +71,29 @@ export function AdminLayout() {
                             h={40}
                             src={Logo}
                         />
+                        <Menu>
+                            <Menu.Target>
+                                <Badge
+                                    variant="outline"
+                                    className="cursor-pointer"
+                                >
+                                    {currentEnv.toUpperCase()}
+                                </Badge>
+                            </Menu.Target>
+
+                            <Menu.Dropdown align="end">
+                                <Menu.Item onClick={() => changeEnv("prod")}>
+                                    🟢 Production
+                                </Menu.Item>
+
+                                <Menu.Item onClick={() => changeEnv("test")}>
+                                    🔵 Test
+                                </Menu.Item>
+                                <Menu.Item onClick={() => changeEnv("dev")}>
+                                    🟡 Development
+                                </Menu.Item>
+                            </Menu.Dropdown>
+                        </Menu>
                     </Group>
                     <Group h="100%" px="md">
                         <ActionIcon
@@ -102,7 +133,7 @@ export function AdminLayout() {
                 </NavLink>
                 <NavLink
                     label="Site"
-                    leftSection={<IconWorldCog  stroke={2}/>}
+                    leftSection={<IconWorldCog stroke={2}/>}
                 >
                     {siteFilteredMenu.map(item => (
                         <NavLink

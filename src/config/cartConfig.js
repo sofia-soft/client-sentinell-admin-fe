@@ -5,12 +5,11 @@ export const CART_HEADER = [
     {key: "items", value: "Items"},
     {key: "total", value: "Total price"},
     {key: "item_count", value: "Item Count"},
-    {key: "created_at", value: "Created At"},
-    {key: "updated_at", value: "Updated At"},
+    {key: "dates", value: "Audit Dates"}
 ];
 
 export const BUTTON_VISIBILITY = {
-    search: {visible: true},
+    search: {visible: false},
     // first_filter: {
     //     visible: true,
     //     title: "Name",

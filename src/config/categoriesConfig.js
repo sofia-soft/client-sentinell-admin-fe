@@ -6,8 +6,7 @@ export const CATEGORIES_HEADER = [
     {key: "slug", value: "Slug"},
     {key: "parent_name", value: "Parent"},
     {key: "is_active", value: "Status"},
-    {key: "created_at", value: "Created At"},
-    {key: "updated_at", value: "Updated At"},
+    {key: "dates", value: "Audit Dates"}
 ];
 
 export const BUTTON_VISIBILITY = {
@@ -25,12 +24,12 @@ export const BUTTON_VISIBILITY = {
     //     icon: IconUserCheck
     // },
     export: {
-        visible: true,
+        visible: false,
         permission: {resource: 'reports', action: 'export'}
 
     },
     import: {
-        visible: true,
+        visible: false,
         permission: {resource: 'data', action: 'import'}
 
     },

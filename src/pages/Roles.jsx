@@ -11,6 +11,7 @@ import {RoleUpdateForm} from "../components/Roles/RoleUpdateForm.jsx";
 import {RoleCreateForm} from "../components/Roles/RoleCreateForm.jsx";
 import {getErrorMessage} from "../utils/getErrorMessage.js";
 import handleSubmitForms from "../utils/handlerSubmitForms.js";
+import {CustomConfirmModal} from "../components/CustomConfirmModal.jsx";
 
 export function Roles() {
     const [roles, setRoles] = useState(null);
@@ -74,13 +75,6 @@ export function Roles() {
         event.preventDefault();
         const form = event.target;
 
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-        // console.log(formData)
-
-        // console.log()
-
-        console.log(data)
         setLoading(true);
 
         const request = await handleSubmitForms(
@@ -132,31 +126,44 @@ export function Roles() {
 
 
     const handleDelete = async (uuid) => {
-        const response = await rolesAip.deleteRole(uuid);
 
         let color;
         let title;
-        const dataResponse = response.data;
 
-        if (response.status === 200 || response.status === 204) {
 
-            setRoles(prev => prev.filter(row => row.uuid !== uuid));
-            color = 'green'
-            title = 'Success'
-        } else {
-            color = 'red'
-            title = 'Fail'
-        }
+        CustomConfirmModal({
+            title: 'Delete review',
+            description: 'Are you sure, that you wanna delete this review?',
+            confirmLabel: 'Delete',
+            cancelLabel: 'Close',
+            confirmColor: 'red',
+            onConfirm: async () => {
+                const response = await rolesAip.deleteRole(uuid);
+                const dataResponse = response.data;
 
-        notifications.show({
-            title: title,
-            message: dataResponse.success ?
-                getErrorMessage(dataResponse.data.code) :
-                dataResponse.error.message,
-            color: color,
-            position: "top-right"
+                if (response.status === 200 || response.status === 204) {
+
+                    setRoles(prev => prev.filter(row => row.uuid !== uuid));
+                    color = 'green'
+                    title = 'Success'
+                } else {
+                    color = 'red'
+                    title = 'Fail'
+                }
+
+                notifications.show({
+                    title: title,
+                    message: dataResponse.success ?
+                        getErrorMessage(dataResponse.data.code) :
+                        dataResponse.error.message,
+                    color: color,
+                    position: "top-right"
+                });
+            },
         });
+
     };
+
 
     return (
         loader ?

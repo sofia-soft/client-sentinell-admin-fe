@@ -8,111 +8,197 @@ import {
     Group,
     Select,
     Center,
-    Avatar
+    Avatar,
+    Loader,
+    Modal,
 } from "@mantine/core";
-// import {useRef} from 'react';
-// import {Dropzone} from '@mantine/dropzone';
+import {Dropzone, IMAGE_MIME_TYPE} from "@mantine/dropzone";
+import {useRef, useState} from "react";
 
-export function ProductsCreateForm({onSubmit, apiLoading}) {
+export function ProductsCreateForm({
+                                       onSubmit,
+                                       apiLoading,
+                                       fetchCategories,
+                                       categories,
+                                       loadingCategories,
+                                       openCategoriesDropDown,
+                                       setCategoriesDropDown,
+                                       handleUploadSubmit
+                                   }) {
+    const openRef = useRef();
+
+    const [file, setFile] = useState(null);
+    const [preview, setPreview] = useState(null);
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const handleDrop = (files) => {
+        const newFile = files[0];
+
+        setFile(newFile);
+        setModalOpen(true);
+    };
+
+
+
     return (
-        <form onSubmit={onSubmit} target={'create'}>
-            <Tabs defaultValue="general">
-
-                <Tabs.List>
-                    <Tabs.Tab value="general">General</Tabs.Tab>
-                    <Tabs.Tab value="inventory">Inventory</Tabs.Tab>
-                </Tabs.List>
-                <Tabs.Panel value="general" pt="md">
-
-                    <Stack>
-                        {/*<Dropzone openRef={openRef} onDrop={() => {*/}
-                        {/*}} activateOnClick={false}>*/}
-                            <Center>
-                                <Avatar variant="outline" radius="xl" size="xl" src=""/>
-                            </Center>
-                        {/*</Dropzone>*/}
-                        <TextInput
-                            key={'name'}
-                            id='name'
-                            name={'name'}
-                            label="Name"
-                            placeholder="Tokyo Marui Glock 17"
-                            required
-                        />
-                        <TextInput
-                            key={'slug'}
-                            id='slug'
-                            name={'slug'}
-                            label="Slug"
-                            placeholder="tokyo-marui-glock-17"
-                            required
-                        />
-
-                        <Textarea
-                            key={'description'}
-                            id='description'
-                            name={'description'}
-                            label="Description"
-                            placeholder="Японски газов пистолет, блоубек, метален слайд"
-                            required
-                        />
-
-                        <Select
-                            key={'is_active'}
-                            id='is_active'
-                            name={'is_active'}
-                            label="Status"
-                            defaultValue="active"
-                            data={[
-                                {value: "active", label: "Active"},
-                                {value: "inactive", label: "Inactive"},
-                            ]}
-                        />
-
-                    </Stack>
-
-                </Tabs.Panel>
-                <Tabs.Panel value="inventory" pt="md">
-
-                    <Stack>
-                        <NumberInput
-                            label="Price"
-                            placeholder="10.00 €"
-                            decimalScale={2}
-                            suffix=" €"
-                            allowNegative={false}
-                        />
-                        <NumberInput
-                            label="Stock"
-                            placeholder="10"
-                            allowNegative={false}
-                        />
-                    </Stack>
-                    <Select
-                        key={'in_stock'}
-                        id='in_stock'
-                        name={'in_stock'}
-                        label="In Stock"
-                        defaultValue={'yes'}
-                        data={[
-                            {value: "yes", label: "Yes"},
-                            {value: "no", label: "No"},
-                        ]}
+        <>
+            <Modal
+                opened={modalOpen}
+                onClose={() => setModalOpen(false)}
+                title="Confirm upload image"
+            >
+                {file && (
+                    <img
+                        src={URL.createObjectURL(file)}
+                        style={{width: "100%", borderRadius: 8}}
                     />
-                </Tabs.Panel>
+                )}
 
-            </Tabs>
+                <Group mt="md">
+                    <Button
+                        variant="default"
+                        fullWidth
+                        onClick={() => setModalOpen(false)}
+                    >
+                        Откажи
+                    </Button>
 
-            <Group justify="flex-end">
-                <Button
-                    type="submit"
-                    fullWidth mt="md"
-                    loading={apiLoading}
-                    loaderProps={{type: 'dots'}}
-                >
-                    Create product
-                </Button>
-            </Group>
-        </form>
+                    <Button
+                        fullWidth
+                        onClick={() => {
+                            setPreview(URL.createObjectURL(file));
+                            setModalOpen(false);
+
+                            handleUploadSubmit(file);
+                        }}
+                    >
+                        Запази
+                    </Button>
+                </Group>
+            </Modal>
+
+            <form onSubmit={onSubmit}>
+                <Tabs defaultValue="general">
+                    <Tabs.List>
+                        <Tabs.Tab value="general">General</Tabs.Tab>
+                        <Tabs.Tab value="inventory">Inventory</Tabs.Tab>
+                    </Tabs.List>
+
+                    <Tabs.Panel value="general" pt="md">
+                        <Stack>
+                            <Dropzone
+                                maxSize={5 * 1024 ** 2}
+                                accept={IMAGE_MIME_TYPE}
+                                openRef={openRef}
+                                activateOnClick={false}
+                                onDrop={handleDrop}
+                            >
+                                <Center>
+                                    <Avatar
+                                        variant="outline"
+                                        radius="xl"
+                                        size="xl"
+                                        src={preview}
+                                        onClick={() => openRef.current?.()}
+                                        style={{
+                                            pointerEvents: "all",
+                                            cursor: "pointer",
+                                        }}
+                                    />
+                                </Center>
+                            </Dropzone>
+
+                            <TextInput
+                                name="name_bg"
+                                label="Name BG"
+                                required
+                            />
+
+                            <TextInput
+                                name="name_en"
+                                label="Name EN"
+                                required
+                            />
+
+                            <TextInput
+                                name="slug"
+                                label="Slug"
+                                required
+                            />
+
+                            <Select
+                                label="Category"
+                                name="category_uuid"
+                                data={categories}
+                                placeholder="Избери категория"
+                                dropdownOpened={openCategoriesDropDown}
+                                onDropdownOpen={fetchCategories}
+                                onDropdownClose={() => setCategoriesDropDown(false)}
+                                rightSection={
+                                    loadingCategories ? <Loader size="xs"/> : null
+                                }
+                                required
+
+                            />
+
+                            <Textarea
+                                name="description_bg"
+                                label="Description BG"
+                                required
+                            />
+
+                            <Textarea
+                                name="description_en"
+                                label="Description EN"
+                                required
+                            />
+
+                            <Select
+                                name="is_active"
+                                label="Status"
+                                defaultValue="1"
+                                required
+                                data={[
+                                    {value: "1", label: "Active"},
+                                    {value: "0", label: "Inactive"},
+                                ]}
+                            />
+                        </Stack>
+                    </Tabs.Panel>
+
+                    <Tabs.Panel value="inventory" pt="md">
+                        <Stack>
+                            <NumberInput
+                                name="price"
+                                label="Price"
+                                decimalScale={2}
+                                suffix=" €"
+                                required
+                                allowNegative={false}
+                            />
+
+                            <NumberInput
+                                name="stock_quantity"
+                                label="Stock"
+                                required
+                                allowNegative={false}
+                            />
+                        </Stack>
+                    </Tabs.Panel>
+                </Tabs>
+
+                <Group justify="flex-end">
+                    <Button
+                        type="submit"
+                        fullWidth
+                        mt="md"
+                        loading={apiLoading}
+                    >
+                        Create product
+                    </Button>
+                </Group>
+            </form>
+        </>
+
     );
 }

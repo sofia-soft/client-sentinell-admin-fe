@@ -1,4 +1,4 @@
-import {useState, useContext, useMemo, useCallback, useEffect} from 'react';
+import {useState, useContext, useMemo, useCallback, useEffect, act} from 'react';
 import {AuthContext} from './AuthContext';
 import * as authApi from '../api/authApi';
 
@@ -8,7 +8,6 @@ export const AuthProvider = ({children}) => {
         return savedUser ? JSON.parse(savedUser) : null;
     });
 
-    // Функция за пълно изчистване на сесията (използва се при logout и изтекла сесия)
     const clearAuth = useCallback(() => {
         setUser(null);
         localStorage.removeItem('user');
@@ -60,6 +59,7 @@ export const AuthProvider = ({children}) => {
     }, [clearAuth]);
 
     const hasPermission = useCallback((resource, action) => {
+
         if (user?.is_superuser === 1 || user?.is_superuser === true) {
             return true;
         }

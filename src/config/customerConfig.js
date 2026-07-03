@@ -5,8 +5,7 @@ export const CUSTOMER_HEADER = [
     {key: "username", value: "Username"},
     {key: "full_name", value: "Names"},
     {key: "phone", value: "Phone"},
-    {key: "created_at", value: "Created At"},
-    {key: "updated_at", value: "Updated At"},
+    {key: "dates", value: "Audit Dates"}
 ];
 
 export const BUTTON_VISIBILITY = {

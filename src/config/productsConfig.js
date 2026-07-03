@@ -8,8 +8,7 @@ export const PRODUCTS_HEADER = [
     {key: "price", value: "Price"},
     {key: "stock_quantity", value: "Stock Quantity"},
     {key: "is_active", value: "Status"},
-    {key: "created_at", value: "Created At"},
-    {key: "updated_at", value: "Updated At"},
+    {key: "dates", value: "Audit Dates"},
     {key: "created_by", value: "Created By"},
     {key: "updated_by", value: "Updated By"}
 ];

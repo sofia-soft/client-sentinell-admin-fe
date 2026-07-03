@@ -33,13 +33,13 @@ export const SYSTEM_MENU_ITEMS = [
         resource: 'permissions',
         action: 'view'
     },
-    {
-        label: "Settings",
-        icon: IconAdjustmentsCog,
-        url: "/settings",
-        resource: 'settings',
-        action: 'view'
-    }
+    // {
+    //     label: "Settings",
+    //     icon: IconAdjustmentsCog,
+    //     url: "/settings",
+    //     resource: 'settings',
+    //     action: 'view'
+    // }
 
 ];
 
@@ -86,12 +86,12 @@ export const SITE_MENU_ITEMS = [
         resource: 'orders',
         action: 'view'
     },
-    {
-        label: "Settings",
-        icon: IconDeviceDesktopCog,
-        url: "/site/settings",
-        resource: 'settings',
-        action: 'view'
-    }
+    // {
+    //     label: "Settings",
+    //     icon: IconDeviceDesktopCog,
+    //     url: "/site/settings",
+    //     resource: 'settings',
+    //     action: 'view'
+    // }
 
 ];
