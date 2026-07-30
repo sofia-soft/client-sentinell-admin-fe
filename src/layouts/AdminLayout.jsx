@@ -26,7 +26,7 @@ import {useState} from "react";
 
 export function AdminLayout() {
     const {logout, hasPermission} = useAuth();
-    const [opened, {toggle}] = useDisclosure();
+    const [opened, {toggle, close}] = useDisclosure();
     const navigate = useNavigate();
     const {colorScheme, setColorScheme} = useMantineColorScheme();
     const [currentEnv, setCurrentEnv] =  useState(localStorage.getItem("api-env") || "prod")
@@ -39,6 +39,11 @@ export function AdminLayout() {
 
     const handleLogout = async () => {
         await logout();
+    };
+
+    const goTo = (url) => {
+        navigate(url);
+        close();
     };
 
 
@@ -59,7 +64,7 @@ export function AdminLayout() {
             header={{height: 60}}
             navbar={{width: 190, breakpoint: 'sm', collapsed: {mobile: !opened}}}
             padding="md"
-            m={50}
+            m={{base: 0, sm: 50}}
         >
             <AppShell.Header>
                 <Group h="100%" p={"0 8px"} justify="space-between">
@@ -67,7 +72,7 @@ export function AdminLayout() {
                         <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm"/>
                         <Image
                             radius="md"
-                            w={160}
+                            w={{base: 110, sm: 160}}
                             h={40}
                             src={Logo}
                         />
@@ -117,7 +122,7 @@ export function AdminLayout() {
                 <NavLink
                     label="Dashboard"
                     leftSection={<IconChartHistogram stroke={2}/>}
-                    onClick={() => navigate('/')}/>
+                    onClick={() => goTo('/')}/>
                 <NavLink
                     label="System"
                     leftSection={<IconDevices2 stroke={2}/>}
@@ -127,7 +132,7 @@ export function AdminLayout() {
                             key={item.label}
                             label={item.label}
                             leftSection={<item.icon stroke={2}/>}
-                            onClick={() => navigate(item.url)}/>
+                            onClick={() => goTo(item.url)}/>
                     ))}
 
                 </NavLink>
@@ -140,7 +145,7 @@ export function AdminLayout() {
                             key={item.label}
                             label={item.label}
                             leftSection={<item.icon stroke={2}/>}
-                            onClick={() => navigate(item.url)}/>
+                            onClick={() => goTo(item.url)}/>
                     ))}
                 </NavLink>
                 {/*<Divider my="md" />*/}
@@ -158,7 +163,6 @@ export function AdminLayout() {
             <AppShell.Main
                 style={{minHeight: 'unset'}}
                 pb={0}
-                pt={50}
             >
                 <Outlet/>
             </AppShell.Main>

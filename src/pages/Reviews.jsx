@@ -1,4 +1,4 @@
-import {Center, Loader, Title} from "@mantine/core";
+import {Center, Loader} from "@mantine/core";
 import {useEffect, useState} from "react";
 import * as reviewsApi from "../api/reviewsApi.js"
 import {PageContentTemplate} from "../components/PageContentTemplate.jsx";
@@ -195,8 +195,6 @@ export function Reviews() {
                 <Loader color="blue" size="xl" type="dots"/>
             </Center> :
             <>
-                <Title order={2}>Reviews</Title>
-
                 <CustomDrawer
                     close={close}
                     opened={opened}
@@ -221,6 +219,7 @@ export function Reviews() {
                 </CustomDrawer>
 
                 <PageContentTemplate
+                    title="Reviews"
                     tableData={
                         {
                             header: REVIEWS_HEADER,

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Center, Loader, Title} from "@mantine/core";
+import {Center, Loader} from "@mantine/core";
 import * as customerApi from "../api/customersApi.js"
 import {PageContentTemplate} from "../components/PageContentTemplate.jsx";
 import {BUTTON_VISIBILITY, CUSTOMER_HEADER} from "../config/customerConfig.js";
@@ -131,8 +131,6 @@ export function Customers() {
                 <Loader color="blue" size="xl" type="dots"/>
             </Center> :
             <>
-                <Title order={2}>Customers</Title>
-
                 <CustomDrawer
                     close={close}
                     opened={opened}
@@ -156,6 +154,7 @@ export function Customers() {
 
 
                 <PageContentTemplate
+                    title="Customers"
                     tableData={
                         {
                             header: CUSTOMER_HEADER,

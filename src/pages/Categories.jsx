@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Center, Loader, Title} from "@mantine/core";
+import {Center, Loader} from "@mantine/core";
 import * as categoryApi from "../api/categoriesApi.js"
 import {PageContentTemplate} from "../components/PageContentTemplate.jsx";
 import {BUTTON_VISIBILITY, CATEGORIES_HEADER} from "../config/categoriesConfig.js";
@@ -130,8 +130,6 @@ export function Categories() {
                 <Loader color="blue" size="xl" type="dots"/>
             </Center> :
             <>
-                <Title order={2}>Categories</Title>
-
                 <CustomDrawer
                     close={close}
                     opened={opened}
@@ -154,6 +152,7 @@ export function Categories() {
                 </CustomDrawer>
 
                 <PageContentTemplate
+                    title="Categories"
                     tableData={
                         {
                             header: CATEGORIES_HEADER,

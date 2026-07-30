@@ -17,13 +17,11 @@ export const BUTTON_VISIBILITY = {
     first_filter: {
         visible: true,
         title: "Resource",
-        values: ['user', 'admin', 'editor'],
         icon: IconUser
     },
     second_filter: {
         visible: true,
         title: "System",
-        values: ['yes', 'no'],
         icon: IconUserCheck
     },
     export: {

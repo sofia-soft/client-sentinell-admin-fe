@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import {useDisclosure} from "@mantine/hooks";
 import * as rolesAip from "../api/rolesApi.js";
 import * as permissionsApi from "../api/permissionsApi.js";
-import {Center, Loader, Title} from "@mantine/core";
+import {Center, Loader} from "@mantine/core";
 import {CustomDrawer} from "../components/CustomDrawer.jsx";
 import {notifications} from "@mantine/notifications";
 import {RoleUpdateForm} from "../components/Roles/RoleUpdateForm.jsx";
@@ -171,9 +171,6 @@ export function Roles() {
                 <Loader color="blue" size="xl" type="dots"/>
             </Center> :
             <>
-
-                <Title order={2}>Roles</Title>
-
                 <CustomDrawer
                     close={close}
                     opened={opened}
@@ -199,6 +196,7 @@ export function Roles() {
 
 
                 <PageContentTemplate
+                    title="Roles"
                     tableData={
                         {
                             header: ROLES_HEADER,

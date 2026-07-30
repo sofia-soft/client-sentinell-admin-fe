@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Center, Loader, Title} from "@mantine/core";
+import {Center, Loader} from "@mantine/core";
 import {PRODUCTS_HEADER, BUTTON_VISIBILITY} from "../config/productsConfig.js";
 import {PageContentTemplate} from "../components/PageContentTemplate.jsx";
 import * as productsApi from "../api/productsApi.js";
@@ -235,8 +235,6 @@ export function Products() {
                 <Loader color="blue" size="xl" type="dots"/>
             </Center> :
             <>
-                <Title order={2}>Products</Title>
-
                 <CustomDrawer
                     close={close}
                     opened={opened}
@@ -275,6 +273,7 @@ export function Products() {
                 </CustomDrawer>
 
                 <PageContentTemplate
+                    title="Products"
                     tableData={
                         {
                             header: PRODUCTS_HEADER,

@@ -13,13 +13,11 @@ export const BUTTON_VISIBILITY = {
     // first_filter: {
     //     visible: true,
     //     title: "Name",
-    //     values: ['user', 'admin', 'editor'],
     //     icon: IconUser
     // },
     // second_filter: {
     //     visible: true,
     //     title: "Status",
-    //     values: ['active', 'inactive'],
     //     icon: IconUserCheck
     // },
     export: {

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Center, Loader, Title} from "@mantine/core";
+import {Center, Loader} from "@mantine/core";
 import {PRODUCTS_ATTRIBUTES_HEADER, BUTTON_VISIBILITY} from "../config/productsAttributesConfig.js";
 import {PageContentTemplate} from "../components/PageContentTemplate.jsx";
 import {CustomDrawer} from "../components/CustomDrawer.jsx";
@@ -134,8 +134,6 @@ export function ProductsAttributes() {
                 <Loader color="blue" size="xl" type="dots"/>
             </Center> :
             <>
-                <Title order={2}>Products Attributes</Title>
-
                 <CustomDrawer
                     close={close}
                     opened={opened}
@@ -158,6 +156,7 @@ export function ProductsAttributes() {
                 </CustomDrawer>
 
                 <PageContentTemplate
+                    title="Products Attributes"
                     tableData={
                         {
                             header: PRODUCTS_ATTRIBUTES_HEADER,

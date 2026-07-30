@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Center, Loader, Title} from "@mantine/core";
+import {Center, Loader} from "@mantine/core";
 import * as ordersApi from "../api/ordersApi.js"
 import {ORDER_HEADER, BUTTON_VISIBILITY} from "../config/orderConfig.js";
 import {PageContentTemplate} from "../components/PageContentTemplate.jsx";
@@ -80,8 +80,8 @@ export function Orders() {
                 <Loader color="blue" size="xl" type="dots"/>
             </Center> :
             <>
-                <Title order={2}>Orders</Title>
                 <PageContentTemplate
+                    title="Orders"
                     tableData={
                         {
                             header: ORDER_HEADER,

@@ -124,18 +124,18 @@ export function Dashboard() {
                 <Loader color="blue" size="xl" type="dots"/>
             </Center> :
             <>
-                <h1>Dashboard</h1>
+                <Title order={2} mb="md">Dashboard</Title>
 
                 <Grid grow gutter="xs" justify="center" align="center">
-                    <Grid.Col span={2}>
-                        <Paper shadow="xl" radius="lg" withBorder p="xl" w={600} h={220}>
+                    <Grid.Col span={{base: 12, lg: 4}}>
+                        <Paper shadow="xl" radius="lg" withBorder p="xl" w="100%" mih={220}>
                             <Flex
                                 mih={50}
                                 gap="xs"
-                                justify="flex-start"
+                                justify="space-between"
                                 align="center"
                                 direction="row"
-                                wrap="nowrap"
+                                wrap="wrap"
                             >
                                 <Stack>
                                     <Title order={2}>
@@ -146,15 +146,14 @@ export function Dashboard() {
                                     </Text>
                                 </Stack>
 
-                                <Image src={Welcome} w={200} ml={60}/>
+                                <Image src={Welcome} w={{base: 120, sm: 200}} visibleFrom="xs"/>
                             </Flex>
                         </Paper>
                     </Grid.Col>
-                    <Grid.Col span={4}>
+                    <Grid.Col span={{base: 12, lg: 8}}>
                         <SimpleGrid
-                            cols={4}
-                            justify="center"
-                            align="center"
+                            cols={{base: 1, xs: 2, lg: 3}}
+                            spacing="xs"
                         >
                             {stats}
                         </SimpleGrid>

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Center, Loader, Title} from "@mantine/core";
+import {Center, Loader} from "@mantine/core";
 import * as cartApi from "../api/cartApi.js"
 import {PageContentTemplate} from "../components/PageContentTemplate.jsx";
 import {BUTTON_VISIBILITY, CART_HEADER} from "../config/cartConfig.js";
@@ -128,8 +128,6 @@ export function Cart() {
                 <Loader color="blue" size="xl" type="dots"/>
             </Center> :
             <>
-                <Title order={2}>Carts</Title>
-
                 <CustomDrawer
                     close={close}
                     opened={opened}
@@ -152,6 +150,7 @@ export function Cart() {
                     )}
                 </CustomDrawer>
                 <PageContentTemplate
+                    title="Carts"
                     tableData={
                         {
                             header: CART_HEADER,

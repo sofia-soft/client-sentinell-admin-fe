@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import {notifications} from "@mantine/notifications";
 import {useDisclosure} from "@mantine/hooks";
 import * as permissionsApi from "../api/permissionsApi.js";
-import {Center, Loader, Title} from "@mantine/core";
+import {Center, Loader} from "@mantine/core";
 import {CustomDrawer} from "../components/CustomDrawer.jsx";
 import {PermissionUpdateFrom} from "../components/Permissions/PermissionUpdateFrom.jsx";
 import {PermissionCreateForm} from "../components/Permissions/PermissionCreateForm.jsx";
@@ -134,9 +134,6 @@ export function Permissions() {
                 <Loader color="blue" size="xl" type="dots"/>
             </Center> :
             <>
-                <Title order={2}>Permissions</Title>
-
-
                 <CustomDrawer
                     close={close}
                     opened={opened}
@@ -159,6 +156,7 @@ export function Permissions() {
                 </CustomDrawer>
 
                 <PageContentTemplate
+                    title="Permissions"
                     tableData={
                         {
                             header: PERMISSIONS_HEADER,

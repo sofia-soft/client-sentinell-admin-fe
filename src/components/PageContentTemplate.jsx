@@ -1,14 +1,15 @@
-import {Box, Button, Container, Flex, Input, Select, Pagination, Text, Group} from "@mantine/core";
+import {Box, Button, Container, Flex, Input, Select, Pagination, Text, Group, Title} from "@mantine/core";
 import {IconDownload, IconUpload, IconPlus, IconSearch} from '@tabler/icons-react';
 import {TableTemplate} from "./TableTemplate.jsx";
 import {useState, useMemo} from "react";
-import {filterBySearch, filterBySelect} from "../utils/search.js";
+import {filterBySearch, filterBySelect, getFilterOptions} from "../utils/search.js";
 import {useAuth} from "../contexts/AuthProvider";
 
 const DEFAULT_LIMIT = 10;
 
 export function PageContentTemplate(
     {
+        title,
         tableData,
         buttonsVisible,
         resourceName,
@@ -35,18 +36,27 @@ export function PageContentTemplate(
         return hasPermission(config.permission.resource, config.permission.action);
     };
 
+    const firstFilterKey = buttonsVisible?.first_filter?.title?.toLowerCase();
+    const secondFilterKey = buttonsVisible?.second_filter?.title?.toLowerCase();
+
     const filteredData = useMemo(() => {
         let result = tableData?.rows || [];
-
-        const firstFilterKey = buttonsVisible?.first_filter?.title?.toLowerCase();
-        const secondFilterKey = buttonsVisible?.second_filter?.title?.toLowerCase();
 
         if (search) result = filterBySearch(result, search);
         if (first && firstFilterKey) result = filterBySelect(result, first.value, firstFilterKey);
         if (second && secondFilterKey) result = filterBySelect(result, second.value, secondFilterKey);
 
         return result;
-    }, [tableData.rows, search, first, second, buttonsVisible]);
+    }, [tableData.rows, search, first, second, firstFilterKey, secondFilterKey]);
+
+    const firstFilterOptions = useMemo(
+        () => getFilterOptions(tableData?.rows || [], firstFilterKey),
+        [tableData.rows, firstFilterKey]
+    );
+    const secondFilterOptions = useMemo(
+        () => getFilterOptions(tableData?.rows || [], secondFilterKey),
+        [tableData.rows, secondFilterKey]
+    );
 
 
     const isBeMode = !!meta;
@@ -87,8 +97,9 @@ export function PageContentTemplate(
 
     return (
         <Container mt={20} mx={"3%"} mb={"2%"} fluid>
-            <Flex justify={"space-between"}>
-                <Flex gap="xs">
+            {title && <Title order={2} mb="md">{title}</Title>}
+            <Flex justify={"space-between"} wrap="wrap" gap="xs">
+                <Flex gap="xs" wrap="wrap">
                     {canShow('search') && (
                         <Input
                             radius="xl"
@@ -108,7 +119,7 @@ export function PageContentTemplate(
                             clearable
                             value={first ? first.value : null}
                             onChange={handleFirst}
-                            data={buttonsVisible.first_filter.values}
+                            data={firstFilterOptions}
                         />
                     )}
                     {canShow('second_filter') && (
@@ -120,7 +131,7 @@ export function PageContentTemplate(
                             clearable
                             value={second ? second.value : null}
                             onChange={handleSecond}
-                            data={buttonsVisible.second_filter.values}
+                            data={secondFilterOptions}
                         />
                     )}
                 </Flex>

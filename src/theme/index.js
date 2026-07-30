@@ -23,15 +23,5 @@ export const myTheme = createTheme({
                 fw: 500,
             },
         }),
-        Text: {
-            defaultProps: {
-                c: 'gray.7',
-            },
-        },
-        Title: {
-            defaultProps: {
-                c: 'gray.9',
-            },
-        },
     },
 });

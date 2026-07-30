@@ -4,7 +4,7 @@ import * as usersApi from '../api/usersApi.js';
 import {useEffect, useState} from "react";
 import {useDisclosure} from '@mantine/hooks';
 import {CustomDrawer} from "../components/CustomDrawer.jsx";
-import {Center, Loader, Title} from "@mantine/core";
+import {Center, Loader} from "@mantine/core";
 import {UserCreateForm} from "../components/Users/UserCreateForm.jsx";
 import {UserUpdateForm} from "../components/Users/UserUpdateForm.jsx";
 import {notifications} from '@mantine/notifications';
@@ -129,8 +129,6 @@ export function Users() {
                 <Loader color="blue" size="xl" type="dots"/>
             </Center> :
             <>
-                <Title order={2}>Users</Title>
-
                 <CustomDrawer
                     close={close}
                     opened={opened}
@@ -153,6 +151,7 @@ export function Users() {
                 </CustomDrawer>
 
                 {users && <PageContentTemplate
+                    title="Users"
                     tableData={{header: USER_HEADER, rows: users}}
                     buttonsVisible={BUTTON_VISIBILITY}
                     resourceName="users"

@@ -342,11 +342,11 @@ export function TableTemplate(
                 </Modal>
             }
 
-            <Table horizontalSpacing="xl"
+            <Table.ScrollContainer minWidth={700}>
+            <Table horizontalSpacing={{base: 'sm', sm: 'xl'}}
                    stickyHeader
                    striped
                    highlightOnHover
-                   stickyHeaderOffset={60}
                    withTableBorder
             >
                 <Table.Thead>
@@ -424,7 +424,8 @@ export function TableTemplate(
                         </Table.Tr>
                     ))}
                 </Table.Tbody>
-            < /Table>
+            </Table>
+            </Table.ScrollContainer>
         </Box>
     )
 }

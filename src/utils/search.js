@@ -12,15 +12,46 @@ export const filterBySearch = (data, search) => {
     );
 };
 
+/**
+ * Връща сравнимата стойност за дадена филтър-колона.
+ * Специални случаи: status -> is_active, system -> is_system.
+ * Ако колоната е обект (напр. role), взима .name / .value.
+ */
+export const getFilterValue = (item, key) => {
+    if (key === 'status') {
+        return item.is_active === 1 || item.is_active === true ? 'active' : 'inactive';
+    }
+    if (key === 'system') {
+        return item.is_system === 1 || item.is_system === true ? 'yes' : 'no';
+    }
+
+    const raw = item[key];
+    if (raw && typeof raw === 'object') return raw.name ?? raw.value ?? '';
+    return raw;
+};
+
+/**
+ * Уникалните опции за филтъра, извлечени от реалните данни.
+ */
+export const getFilterOptions = (data, key) => {
+    if (!key) return [];
+    if (key === 'status') return ['active', 'inactive'];
+    if (key === 'system') return ['yes', 'no'];
+
+    const unique = new Set();
+    (data || []).forEach((item) => {
+        const value = getFilterValue(item, key);
+        if (value !== null && value !== undefined && value !== '') {
+            unique.add(String(value));
+        }
+    });
+    return [...unique];
+};
+
 export const filterBySelect = (data, value, key) => {
     if (!value) return data;
 
-    return data.filter((item) => {
-        if (key === 'status' || key === 'system') {
-            const realKey = key === "status" ? "is_active" : "is_system";
-            const normalizedValue = value.value === 'active' || value.value === 'yes' ? 1 : 0;
-            return item[realKey] === normalizedValue;
-        }
-        return String(item[key]) === String(value.value);
-    });
+    return data.filter(
+        (item) => String(getFilterValue(item, key)) === String(value)
+    );
 };
