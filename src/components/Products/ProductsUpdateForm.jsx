@@ -11,30 +11,24 @@ import {
     Textarea,
     TextInput,
     Avatar,
-    Center, Loader, Modal
+    Center, Loader, Modal, Table, ActionIcon
 } from "@mantine/core";
 import {useEffect, useRef, useState} from "react";
 import {Dropzone, IMAGE_MIME_TYPE} from "@mantine/dropzone";
-import {getLocalizedValue} from "../../utils/utils.js";
-
-const getSiteBase = () => {
-    const env = localStorage.getItem("api-env") || "prod";
-
-    const map = {
-        PROD: import.meta.env.VITE_SITE_URL_PROD,
-        TEST: import.meta.env.VITE_SITE_URL_TEST,
-    };
-
-    return map[env] || import.meta.env.VITE_SITE_URL_PROD;
-};
+import {getImageUrl, getLocalizedValue} from "../../utils/utils.js";
+import {IconPlus, IconTrash} from "@tabler/icons-react";
+import {VariantsEditor} from "./VariantsEditor.jsx";
 
 export function ProductsUpdateForm({
                                        productData,
                                        onSubmit,
                                        apiLoading,
                                        fetchCategories,
+                                       fetchProductAttributes,
                                        categories,
-                                       handleUploadSubmit
+                                       productAttributes,
+                                       handleUploadSubmit,
+                                       products
                                    }) {
 
     const openRef = useRef();
@@ -42,6 +36,29 @@ export function ProductsUpdateForm({
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
+    const [variants, setVariants] = useState([]);
+    const [filters, setFilters] = useState(
+        Object.entries(productData.filters)?.map(([key, value]) => ({
+            id: crypto.randomUUID(),
+            key: key,
+            value: value[0],
+        })) || []
+    );
+    const [loadingProductsAttributes, setLoadingProductsAttributes] = useState(false);
+
+    const filtersTableConfig = {
+        state: filters,
+        stateUpdate: setFilters,
+        buttonLabel: "filter",
+        columnNames: ['Key', 'Value'],
+        newObjectTemplate: {
+            id: crypto.randomUUID(),
+            key: "",
+            value: "",
+        },
+        fields: ['key', 'value']
+    }
+
 
     useEffect(() => {
         fetchCategories()
@@ -53,14 +70,100 @@ export function ProductsUpdateForm({
         setModalOpen(true);
     };
 
-    const getImageUrl = (path) => {
-        if (!path) return null;
-
-        if (path.startsWith("blob:")) return path;
-        if (path.startsWith("http")) return path;
-
-        return `${getSiteBase()}${path}`;
+    const addRow = (type) => {
+        type.stateUpdate(prev => [
+            ...prev,
+            type.newObjectTemplate
+        ]);
     };
+
+    const removeRow = (type, id) => {
+        type.stateUpdate(prev => prev.filter(i => i.id !== id));
+    };
+
+    const updateRow = (type, index, field, value) => {
+        type.stateUpdate(prev =>
+            prev.map(row =>
+                row.id === index
+                    ? {...row, [field]: value}
+                    : row
+            )
+        );
+    };
+
+    const loadProductsAttributes = async () => {
+        if (productAttributes.length > 0) return;
+        setLoadingProductsAttributes(true);
+        await fetchProductAttributes();
+        setLoadingProductsAttributes(false);
+
+    };
+
+
+    const tableTabs = (type) => {
+
+        return (
+            <Stack>
+                <Group justify="flex-end" mb="md">
+                    <Button
+                        variant="light"
+                        leftSection={<IconPlus size={18}/>}
+                        onClick={() => addRow(type)}
+                    >
+                        Add {type.buttonLabel}
+                    </Button>
+                </Group>
+                <Table striped highlightOnHover>
+
+                    <Table.Thead>
+                        <Table.Tr>
+                            {type.columnNames.map(name => (
+                                <Table.Th key={name} width={220}>{name}</Table.Th>))}
+                            <Table.Th width={80}></Table.Th>
+                        </Table.Tr>
+                    </Table.Thead>
+
+                    <Table.Tbody>
+                        {type.state.map((row) => (
+                            <Table.Tr key={row.id}>
+                                {type.fields.map(field => (
+                                    <Table.Td key={field}>
+                                        <Group justify="center">
+                                            <TextInput
+                                                w={130}
+                                                size="xs"
+                                                radius="md"
+                                                value={row[field]}
+                                                onChange={(e) =>
+                                                    updateRow(
+                                                        type,
+                                                        row.id,
+                                                        field,
+                                                        e.currentTarget.value
+                                                    )
+                                                }
+                                            />
+                                        </Group>
+                                    </Table.Td>
+                                ))}
+                                <Table.Td>
+                                    <ActionIcon
+                                        color="red"
+                                        variant="light"
+                                        onClick={() => removeRow(type, row.id)}
+                                        disabled={row.length === 1}
+                                    >
+                                        <IconTrash size={18}/>
+                                    </ActionIcon>
+                                </Table.Td>
+                            </Table.Tr>
+                        ))}
+                    </Table.Tbody>
+                </Table>
+
+            </Stack>)
+    }
+
     return (
         <>
             <Modal
@@ -103,8 +206,9 @@ export function ProductsUpdateForm({
                     <Tabs.List>
                         <Tabs.Tab value="general">General</Tabs.Tab>
                         <Tabs.Tab value="inventory">Inventory</Tabs.Tab>
+                        <Tabs.Tab value="filters">Filters</Tabs.Tab>
+                        <Tabs.Tab value="variants" onClick={loadProductsAttributes}>Variants</Tabs.Tab>
                         <Tabs.Tab value="system">System Info</Tabs.Tab>
-
                     </Tabs.List>
                     <Tabs.Panel value="general" pt="md">
 
@@ -171,6 +275,27 @@ export function ProductsUpdateForm({
                                 clearable
                             />
 
+                            <Select
+                                key={'parent_uuid'}
+                                id='parent_uuid'
+                                name={'parent_uuid'}
+                                label="Parent"
+                                data={products}
+                                defaultValue={productData.parent_uuid}
+                                mb="sm"
+                                clearable
+                            />
+                            <Select
+                                key={'display_mode'}
+                                id='display_mode'
+                                name={'display_mode'}
+                                label="Display Mode"
+                                data={['grouped', 'separate']}
+                                defaultValue={productData.display_mode}
+                                mb="sm"
+                                clearable
+                            />
+
                             <Textarea
                                 key={'description_bg'}
                                 id='description_bg'
@@ -233,6 +358,21 @@ export function ProductsUpdateForm({
                         </Stack>
 
                     </Tabs.Panel>
+                    <Tabs.Panel value="filters" pt="md">
+                        {tableTabs(filtersTableConfig)}
+                    </Tabs.Panel>
+                    <Tabs.Panel value="variants" pt="md">
+                        {loadingProductsAttributes ? (
+                            <Loader size="xs"/>
+                        ) : (
+                            <VariantsEditor
+                                productAttributes={productAttributes}
+                                initialVariants={productData.variants || []}
+                                basePrice={productData.price}
+                                onChange={setVariants}
+                            />
+                        )}
+                    </Tabs.Panel>
                     <Tabs.Panel value="system" pt="md">
 
                         <Paper withBorder p="md">
@@ -256,7 +396,18 @@ export function ProductsUpdateForm({
                     </Tabs.Panel>
 
                 </Tabs>
-
+                <input
+                    type="hidden"
+                    name='filters'
+                    value={JSON.stringify(
+                        filters.map(({id, ...filter}) => filter)
+                    )}
+                />
+                <input
+                    type="hidden"
+                    name='variants'
+                    value={JSON.stringify(variants)}
+                />
                 <Group justify="flex-end">
                     <Button
                         type="submit"

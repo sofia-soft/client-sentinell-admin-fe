@@ -10,26 +10,42 @@ import {
     Center,
     Avatar,
     Loader,
-    Modal,
+    Modal, Table, ActionIcon,
 } from "@mantine/core";
 import {Dropzone, IMAGE_MIME_TYPE} from "@mantine/dropzone";
 import {useRef, useState} from "react";
+import {IconPlus, IconTrash} from "@tabler/icons-react";
+import {VariantsEditor} from "./VariantsEditor.jsx";
 
 export function ProductsCreateForm({
                                        onSubmit,
                                        apiLoading,
                                        fetchCategories,
+                                       fetchProductAttributes,
                                        categories,
+                                       productAttributes,
                                        loadingCategories,
                                        openCategoriesDropDown,
                                        setCategoriesDropDown,
-                                       handleUploadSubmit
+                                       handleUploadSubmit,
+                                       products
                                    }) {
     const openRef = useRef();
 
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
+    const [filters, setFilters] = useState([]);
+    const [variants, setVariants] = useState([]);
+    const [price, setPrice] = useState('');
+    const [loadingProductsAttributes, setLoadingProductsAttributes] = useState(false);
+
+    const loadProductsAttributes = async () => {
+        if (productAttributes.length > 0) return;
+        setLoadingProductsAttributes(true);
+        await fetchProductAttributes();
+        setLoadingProductsAttributes(false);
+    };
 
     const handleDrop = (files) => {
         const newFile = files[0];
@@ -38,7 +54,30 @@ export function ProductsCreateForm({
         setModalOpen(true);
     };
 
+    const addRow = () => {
+        setFilters(prev => [
+            ...prev,
+            {
+                id: crypto.randomUUID(),
+                key: "",
+                value: "",
+            }
+        ]);
+    };
 
+    const removeRow = (id) => {
+        setFilters(prev => prev.filter(i => i.id !== id));
+    };
+
+    const updateRow = (index, field, value) => {
+        setFilters(prev =>
+            prev.map(row =>
+                row.id === index
+                    ? {...row, [field]: value}
+                    : row
+            )
+        );
+    };
 
     return (
         <>
@@ -82,6 +121,8 @@ export function ProductsCreateForm({
                     <Tabs.List>
                         <Tabs.Tab value="general">General</Tabs.Tab>
                         <Tabs.Tab value="inventory">Inventory</Tabs.Tab>
+                        <Tabs.Tab value="filters">Filters</Tabs.Tab>
+                        <Tabs.Tab value="variants" onClick={loadProductsAttributes}>Variants</Tabs.Tab>
                     </Tabs.List>
 
                     <Tabs.Panel value="general" pt="md">
@@ -141,14 +182,37 @@ export function ProductsCreateForm({
 
                             />
 
+                            <Select
+                                key={'parent_uuid'}
+                                id='parent_uuid'
+                                name={'parent_uuid'}
+                                label="Parent"
+                                placeholder="Избери parent"
+                                data={products}
+                                mb="sm"
+                                clearable
+                            />
+                            <Select
+                                key={'display_mode'}
+                                id='display_mode'
+                                name={'display_mode'}
+                                label="Display Mode"
+                                data={['grouped', 'separate']}
+                                mb="sm"
+                                clearable
+                            />
                             <Textarea
-                                name="description_bg"
+                                key={'description_bg'}
+                                id='description_bg'
+                                name={'description_bg'}
                                 label="Description BG"
                                 required
                             />
 
                             <Textarea
-                                name="description_en"
+                                key={'description_en'}
+                                id='description_en'
+                                name={'description_en'}
                                 label="Description EN"
                                 required
                             />
@@ -156,11 +220,11 @@ export function ProductsCreateForm({
                             <Select
                                 name="is_active"
                                 label="Status"
-                                defaultValue="1"
+                                defaultValue="inactive"
                                 required
                                 data={[
-                                    {value: "1", label: "Active"},
-                                    {value: "0", label: "Inactive"},
+                                    {value: "active", label: "Active"},
+                                    {value: "inactive", label: "Inactive"},
                                 ]}
                             />
                         </Stack>
@@ -175,6 +239,8 @@ export function ProductsCreateForm({
                                 suffix=" €"
                                 required
                                 allowNegative={false}
+                                value={price}
+                                onChange={setPrice}
                             />
 
                             <NumberInput
@@ -185,8 +251,107 @@ export function ProductsCreateForm({
                             />
                         </Stack>
                     </Tabs.Panel>
-                </Tabs>
+                    <Tabs.Panel value="filters" pt="md">
+                        <Stack>
+                            <Group justify="flex-end" mb="md">
 
+                                <Button
+                                    variant="light"
+                                    leftSection={<IconPlus size={18}/>}
+                                    onClick={addRow}
+                                >
+                                    Add filter
+                                </Button>
+
+                            </Group>
+                            <Table striped highlightOnHover>
+
+                                <Table.Thead>
+                                    <Table.Tr>
+                                        <Table.Th width={220}>Key</Table.Th>
+                                        <Table.Th width={220}>Value</Table.Th>
+                                        <Table.Th width={80}></Table.Th>
+                                    </Table.Tr>
+                                </Table.Thead>
+
+                                <Table.Tbody>
+                                    {filters.map((row) => (
+                                        <Table.Tr key={row.id}>
+                                            <Table.Td>
+                                                <Group justify="center">
+                                                    <TextInput
+                                                        w={130}
+                                                        size="xs"
+                                                        radius="md"
+                                                        value={row.key}
+                                                        onChange={(e) =>
+                                                            updateRow(
+                                                                row.id,
+                                                                "key",
+                                                                e.currentTarget.value
+                                                            )
+                                                        }
+                                                    />
+                                                </Group>
+                                            </Table.Td>
+                                            <Table.Td>
+                                                <Group justify="center">
+                                                    <TextInput
+                                                        w={130}
+                                                        size="xs"
+                                                        radius="md"
+                                                        value={row.value}
+                                                        onChange={(e) =>
+                                                            updateRow(
+                                                                row.id,
+                                                                "value",
+                                                                e.currentTarget.value
+                                                            )
+                                                        }
+                                                    />
+                                                </Group>
+                                            </Table.Td>
+                                            <Table.Td>
+                                                <ActionIcon
+                                                    color="red"
+                                                    variant="light"
+                                                    onClick={() => removeRow(row.id)}
+                                                    disabled={row.length === 1}
+                                                >
+                                                    <IconTrash size={18}/>
+                                                </ActionIcon>
+                                            </Table.Td>
+                                        </Table.Tr>
+                                    ))}
+                                </Table.Tbody>
+                            </Table>
+
+                        </Stack>
+                    </Tabs.Panel>
+                    <Tabs.Panel value="variants" pt="md">
+                        {loadingProductsAttributes ? (
+                            <Loader size="xs"/>
+                        ) : (
+                            <VariantsEditor
+                                productAttributes={productAttributes}
+                                basePrice={price}
+                                onChange={setVariants}
+                            />
+                        )}
+                    </Tabs.Panel>
+                </Tabs>
+                <input
+                    type="hidden"
+                    name='filters'
+                    value={JSON.stringify(
+                        filters.map(({ id, ...filter }) => filter)
+                    )}
+                />
+                <input
+                    type="hidden"
+                    name='variants'
+                    value={JSON.stringify(variants)}
+                />
                 <Group justify="flex-end">
                     <Button
                         type="submit"

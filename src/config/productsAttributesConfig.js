@@ -1,15 +1,10 @@
-import {IconUser, IconUserCheck} from "@tabler/icons-react";
+// import {IconUser, IconUserCheck} from "@tabler/icons-react";
 
-export const PRODUCTS_HEADER = [
+export const PRODUCTS_ATTRIBUTES_HEADER = [
     {key: "id", value: "ID"},
-    {key: "name", value: "Product Name"},
-    {key: "slug", value: "Slug"},
-    {key: "description", value: "Description"},
-    {key: "price", value: "Price"},
-    {key: "stock_quantity", value: "Stock Quantity"},
+    {key: "name", value: "Product Attributes Name"},
     {key: "is_active", value: "Status"},
-    {key: "dates", value: "Audit Dates"},
-    {key: "display_mode", value: "Display mode"}
+    {key: "created_at", value: "Created At"},
 ];
 
 export const BUTTON_VISIBILITY = {

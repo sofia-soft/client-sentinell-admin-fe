@@ -35,7 +35,7 @@ export function RoleUpdateForm({roleData, onSubmit, apiLoading, permissionsHandl
                 <Tabs.List>
                     <Tabs.Tab value="general">General</Tabs.Tab>
                     <Tabs.Tab value="permissions" onClick={loadPermissions}>Permissions</Tabs.Tab>
-                    <Tabs.Tab value="system">System Info</Tabs.Tab>
+                    <Tabs.Tab value="system">System</Tabs.Tab>
                 </Tabs.List>
 
                 <Tabs.Panel value="general" pt="md">
@@ -49,27 +49,6 @@ export function RoleUpdateForm({roleData, onSubmit, apiLoading, permissionsHandl
                             placeholder="Administrator"
                             defaultValue={roleData?.name}
                             disabled={roleData?.system}
-                        />
-
-                        <Textarea
-                            key={'description'}
-                            id='description'
-                            name={'description'}
-                            label="Description"
-                            placeholder="Describe this role..."
-                            defaultValue={roleData?.description}
-                        />
-
-                        <Select
-                            key={'is_active'}
-                            id='is_active'
-                            name={'is_active'}
-                            label="Status"
-                            defaultValue={roleData?.is_active ? 'active' : 'inactive'}
-                            data={[
-                                {value: "active", label: "Active"},
-                                {value: "inactive", label: "Inactive"},
-                            ]}
                         />
 
                         <Switch
@@ -185,31 +164,3 @@ export function RoleUpdateForm({roleData, onSubmit, apiLoading, permissionsHandl
         </form>
     );
 }
-
-/**
- *
- *
- *
- *
- *
- *
- * Ако искаш още по-професионално
- *
- * Мога да ти покажа и enterprise Roles UI, който има:
- *
- * 🔐 permission inheritance
- *
- * 📊 permission table (view/create/edit/delete columns)
- *
- * 👥 assigned users preview
- *
- * 🕑 audit timeline
- *
- * ⚡ dirty form detection
- *
- * Това е UI като в Stripe / GitHub / Supabase admin панели и става много мощно.
- *
- *
- *
- *
- */

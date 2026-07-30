@@ -9,6 +9,7 @@ export default async function handleSubmitForms(api, form, imagePath, clearData)
         const formData = new FormData(form);
         data = Object.fromEntries(formData.entries());
 
+        console.log(data)
         if (imagePath) {
             data.main_image = imagePath;
         }

@@ -1,4 +1,4 @@
-import {Table, Badge, Box, Image, Text, Modal, ActionIcon, Rating, Center, Menu, Popover} from '@mantine/core';
+import {Table, Badge, Box, Image, Text, Modal, ActionIcon, Rating, Center, Menu, Popover, Select} from '@mantine/core';
 import {useAuth} from "../contexts/AuthProvider.jsx";
 import {
     IconPencil,
@@ -10,7 +10,8 @@ import {
     IconTruckDelivery,
     IconBuildingStore,
     IconAddressBook,
-    IconFileDescription
+    IconFileDescription,
+    IconStackBack
 } from '@tabler/icons-react';
 import Nodata from "../assets/no_data.svg"
 import {useDisclosure} from "@mantine/hooks";
@@ -42,6 +43,9 @@ export function TableTemplate(
     const [orderStatuses, setOrderStatuses] = useState([]);
     const [openedPopOver, setOpenedPopOver] = useState(null);
     const arrayWithIcons = ["items", 'shipping_address', 'speedy_office', "comment", 'dates', 'status']
+    const [displayMode, setDisplayMode] = useState({});
+
+
     useEffect(() => {
 
         if (resourceName === 'order') {
@@ -64,6 +68,10 @@ export function TableTemplate(
         }
     }
 
+    const updateDisplayMode = (value) => {
+        console.log(value)
+    }
+
     const handleOpen = (key, value) => {
 
         if (key === 'items') {
@@ -80,7 +88,10 @@ export function TableTemplate(
                             {
                                 value.map(product =>
                                     <Table.Tr key={product.product_uuid}>
-                                        <Table.Td>{getLocalizedValue(product.product_name, 'en')}</Table.Td>
+                                        <Table.Td>
+                                            {getLocalizedValue(product.product_name, 'en')}
+                                            {product?.variant_attributes.map(variant => ` - ${getLocalizedValue(variant, 'en')}`)}
+                                        </Table.Td>
                                         <Table.Td>{product.quantity}</Table.Td>
                                         <Table.Td>{product.price ?? product.price_at_purchase}</Table.Td>
                                     </Table.Tr>)
@@ -112,7 +123,7 @@ export function TableTemplate(
         if (!value) return;
 
         const popoverContext = () => {
-            if (key ===  'dates') return <>
+            if (key === 'dates') return <>
                 <Text size="sm">
                     Created: {value.created_at}
                 </Text>
@@ -300,6 +311,15 @@ export function TableTemplate(
                     {value === 1 ? "yes" : "no"}
                 </Badge>
             );
+        }
+
+        if (columnKey === 'display_mode') {
+            return value === "grouped" &&
+                (<Badge
+                    leftSection={<IconStackBack/>}
+                    variant="transparent"
+                    style={{cursor: 'pointer'}}
+                ></Badge>)
         }
 
         return value;

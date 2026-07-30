@@ -8,4 +8,4 @@ export const updatePermissions = async (uuid, data) => requester.put(`${BaseUrl}
 export const deletePermissions = async (uuid) => requester.del(`${BaseUrl}/delete/${uuid}/`);
 export const getPermission = async (uuid) => requester.get(`${BaseUrl}/${uuid}/`);
 
-export const getResources = async () => requester.get()
+export const getResources = async () => requester.get(`${BaseUrl}/resources/`)

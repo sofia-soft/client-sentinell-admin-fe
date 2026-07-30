@@ -13,6 +13,8 @@ import handleSubmitForms from "../utils/handlerSubmitForms.js";
 import {CustomConfirmModal} from "../components/CustomConfirmModal.jsx";
 import * as permissionsApi from "../api/permissionsApi.js";
 import {getErrorMessage} from "../utils/getErrorMessage.js";
+import {getLocalizedValue} from "../utils/utils.js";
+import {listProductsAttributes} from "../api/productsAttributesApi.js";
 
 export function Products() {
     const [loader, setLoader] = useState(false);
@@ -26,6 +28,7 @@ export function Products() {
     const [drawerType, setDrawerType] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [imagePath, setImagePath] = useState("");
+    const [productAttributes, setProductAttributes] = useState([]);
 
     useEffect(() => {
         setLoader(true);
@@ -44,7 +47,6 @@ export function Products() {
         event.preventDefault();
         const form = event.target;
 
-        setLoading(true);
 
         const request = await handleSubmitForms(
             form.target === 'update'
@@ -144,16 +146,10 @@ export function Products() {
             if (response.status === 200) {
 
                 const mappedCategories = response.data.data.map((item) => {
-                    let name = item.name;
-
-                    try {
-                        name = JSON.parse(name);
-                    } catch {
-                    }
 
                     return {
                         value: item.uuid,
-                        label: name?.en ?? name,
+                        label: getLocalizedValue(item.name, 'en'),
                     };
                 });
 
@@ -165,6 +161,32 @@ export function Products() {
         } finally {
             setLoadingCategories(false);
         }
+    }
+
+    const fetchProductsAttributes = async () => {
+        if (productAttributes.length > 0) return;
+
+        try {
+            const response = await listProductsAttributes();
+            if (response.status === 200) {
+
+                const mappedAttributes = response.data.data
+                    .filter(item => item.is_active)
+                    .map(item => ({
+                        value: item.uuid,
+                        label: getLocalizedValue(item.name, 'en'),
+                        values: item.attribute_values.map(itemValue => ({
+                            value: itemValue.product_attribute_value_uuid,
+                            label: getLocalizedValue(itemValue.product_attribute_value_value, 'en'),
+                        }))
+                    }));
+
+                setProductAttributes(mappedAttributes);
+            }
+        } catch (error) {
+            console.error("Грешка при зареждане на категории:", error);
+        }
+
     }
 
     const handleUploadSubmit = async (file) => {
@@ -202,6 +224,11 @@ export function Products() {
 
     };
 
+    const productOptions = products?.map(product => ({
+        value: product.uuid,
+        label: getLocalizedValue(product.name, 'en'),
+    }));
+
     return (
         loader ?
             <Center style={{position: "fixed", zIndex: 10, top: '50%', left: '50%'}}>
@@ -220,11 +247,14 @@ export function Products() {
                             onSubmit={handleSubmitForm}
                             apiLoading={loading}
                             fetchCategories={fetchCategories}
+                            fetchProductAttributes={fetchProductsAttributes}
                             categories={categories}
+                            productAttributes={productAttributes}
                             loadingCategories={loadingCategories}
                             openCategoriesDropDown={openCategoriesDropDown}
                             setCategoriesDropDown={setCategoriesDropDown}
                             handleUploadSubmit={handleUploadSubmit}
+                            products={productOptions}
                         />
                     )}
 
@@ -234,8 +264,11 @@ export function Products() {
                             onSubmit={handleSubmitForm}
                             apiLoading={loading}
                             fetchCategories={fetchCategories}
+                            fetchProductAttributes={fetchProductsAttributes}
                             categories={categories}
+                            productAttributes={productAttributes}
                             handleUploadSubmit={handleUploadSubmit}
+                            products={productOptions}
 
                         />
                     )}

@@ -66,6 +66,13 @@ export const SITE_MENU_ITEMS = [
         action: 'view'
     },
     {
+        label: "Products Attributes",
+        icon: IconPackage ,
+        url: "/products-attributes",
+        resource: 'products-attributes',
+        action: 'view'
+    },
+    {
         label: "Reviews",
         icon: IconShoppingCartHeart ,
         url: "/reviews",

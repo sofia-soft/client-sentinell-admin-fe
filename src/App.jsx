@@ -17,6 +17,7 @@ import {Products} from "./pages/Products.jsx";
 import {Categories} from "./pages/Categories.jsx";
 import {Customers} from "./pages/Customers.jsx";
 import {ModalsProvider} from '@mantine/modals';
+import {ProductsAttributes} from "./pages/ProductsAttributes.jsx";
 
 
 function App() {
@@ -52,6 +53,7 @@ function AppRouter() {
                         <Route path="/settings" element={<div>Settings</div>}/>
                         <Route path="/categories" element={<Categories/>}/>
                         <Route path="/products" element={<Products/>}/>
+                        <Route path="/products-attributes" element={<ProductsAttributes/>}/>
                         <Route path="/reviews" element={<Reviews/>}/>
                         <Route path="/cart" element={<Cart/>}/>
                         <Route path="/orders" element={<Orders/>}/>
