@@ -96,7 +96,7 @@ export function PageContentTemplate(
     const to = Math.min(currentPage * limit, total);
 
     return (
-        <Container mt={20} mx={"3%"} mb={"2%"} fluid>
+        <Container mt={20} mx={"2%"} mb={"2%"} fluid>
             {title && <Title order={2} mb="md">{title}</Title>}
             <Flex justify={"space-between"} wrap="wrap" gap="xs">
                 <Flex gap="xs" wrap="wrap">
@@ -135,7 +135,7 @@ export function PageContentTemplate(
                         />
                     )}
                 </Flex>
-                <Flex gap="xs">
+                <Flex gap="xs" wrap="wrap">
                     {canShow('export') && (
                         <Button variant="outline" radius="lg" leftSection={<IconDownload stroke={2}/>}>
                             Export

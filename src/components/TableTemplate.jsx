@@ -140,6 +140,9 @@ export function TableTemplate(
                 <Text size="sm" mt={5}>
                     Phone: {value.phone}
                 </Text>
+                <Text size="sm" mt={5}>
+                    email: {value.email}
+                </Text>
             </>
 
             return <Text size="sm">{value}</Text>

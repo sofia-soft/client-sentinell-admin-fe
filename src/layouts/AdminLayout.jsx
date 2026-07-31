@@ -63,12 +63,11 @@ export function AdminLayout() {
         <AppShell
             header={{height: 60}}
             navbar={{width: 190, breakpoint: 'sm', collapsed: {mobile: !opened}}}
-            padding="md"
-            m={{base: 0, sm: 50}}
+            m={{base: 0, sm: 40}}
         >
             <AppShell.Header>
-                <Group h="100%" p={"0 8px"} justify="space-between">
-                    <Group h="100%" px="md">
+                <Group h="100%" p={"0 16px"} justify="space-between">
+                    <Group h="100%">
                         <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm"/>
                         <Image
                             radius="md"
@@ -100,7 +99,7 @@ export function AdminLayout() {
                             </Menu.Dropdown>
                         </Menu>
                     </Group>
-                    <Group h="100%" px="md">
+                    <Group h="100%">
                         <ActionIcon
                             variant="transparent"
                             color={colorScheme === 'light' ? "black" : "white"}
